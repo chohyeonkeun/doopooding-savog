@@ -1,0 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.mariadb.jdbc:mariadb-java-client:2.5.1")
+    }
+}
+
+dependencies {
+    // exposed
+    api("org.jetbrains.exposed:exposed:${exposedVersion}")
+    api("org.jetbrains.exposed:spring-transaction:${exposedVersion}")
+
+    api "org.geolatte:geolatte-geom:${geolatteVersion}"
+    api "com.vividsolutions:jts:${vividsolutionsVersion}"
+
+    api("com.zaxxer:HikariCP:${hikariCpVersion}")
+    api("com.google.guava:guava:29.0-jre")
+}

@@ -1,0 +1,12 @@
+rootProject.name = 'doopooding-savog'
+
+include("api")
+include("core")
+
+for (project in rootProject.children) {
+    project.projectDir = file("subprojects/${project.name}")
+
+    for (subProject in project.children) {
+        subProject.projectDir = file("subprojects/${project.name}/${subProject.name}")
+    }
+}

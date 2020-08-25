@@ -1,0 +1,13 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    api(":core")
+    api("org.springframework.kotlin:spring-webmvc-kotlin-coroutine:${springKotlinCoroutineVersion}")
+//    api("org.springframework:spring-webmvc:3.1.1.RELEASE")
+
+}
+
+bootJar.enabled = true
+bootJar {
+    mainClassName = 'com.savog.doopooding.api.ApplicationKt'
+}
