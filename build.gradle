@@ -16,6 +16,7 @@ buildscript {
         junitPlatformVersion = '1.5.2'
         poiVersion = '4.1.0'
         hikariCpVersion = "3.4.1"
+        javaJwtVersion = "0.9.1"
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")

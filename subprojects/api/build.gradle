@@ -1,8 +1,11 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-    api(":core")
+    implementation project(":core")
     api("org.springframework.kotlin:spring-webmvc-kotlin-coroutine:${springKotlinCoroutineVersion}")
+    implementation("io.jsonwebtoken:jjwt:${javaJwtVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-web")
 //    api("org.springframework:spring-webmvc:3.1.1.RELEASE")
 
 }

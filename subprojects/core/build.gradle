@@ -17,4 +17,5 @@ dependencies {
 
     api("com.zaxxer:HikariCP:${hikariCpVersion}")
     api("com.google.guava:guava:29.0-jre")
+    implementation("org.springframework.boot:spring-boot-starter-security")
 }
