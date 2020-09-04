@@ -12,12 +12,12 @@ object Managers : LongIdTable("manager", "id") {
     /**
      * 회원 ID
      */
-    val memberId: Column<Long> = long("member_id")
+    val userId: Column<Long> = long("user_id")
 
     /**
-     * 총괄 책임자
+     * 관리자 유형
      */
-    val executive: Column<Int> = integer("executive").default(0)
+    val type: Column<String> = varchar("type", 30)
 
     /**
      * 삭제 여부
@@ -36,9 +36,9 @@ object Managers : LongIdTable("manager", "id") {
 }
 
 class Manager(id: EntityID<Long>) : LongEntity(id) {
-    var memberId: Long by Managers.memberId
+    var userId: Long by Managers.userId
 
-    var executive: Int by Managers.executive
+    var type: String by Managers.type
 
     var deleted: Int by Managers.deleted
 
