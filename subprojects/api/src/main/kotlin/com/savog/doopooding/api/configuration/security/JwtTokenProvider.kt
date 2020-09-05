@@ -20,8 +20,8 @@ class JwtTokenProvider(@Qualifier("customUserDetailService") private val userDet
 
     private var secretKey = "savog"
 
-    // 토큰 유효시간 30분
-    private val tokenValidTime = 30 * 60 * 1000L
+    // 토큰 유효시간 12시간
+    private val tokenValidTime = 12 * 60 * 60 * 1000L
 
     // 객체 초기화, secretKey를 Base64로 인코딩
     @PostConstruct
@@ -38,7 +38,7 @@ class JwtTokenProvider(@Qualifier("customUserDetailService") private val userDet
             .setClaims(claims) // 정보 저장
             .setIssuedAt(now) // 토큰 발행 시간 정보
             .setExpiration(Date(now.time + tokenValidTime)) // 토큰 유효 시간 설정
-            .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘과 signature에 들어갈 secret값 세팅
+            .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘(해싱)과 signature에 들어갈 secret값 세팅
             .compact()
     }
 
@@ -55,7 +55,7 @@ class JwtTokenProvider(@Qualifier("customUserDetailService") private val userDet
 
     // Request의 Header에서 token 값을 가져온다. "X-AUTH-TOKEN" : "TOKEN값"
     fun resolveToken(request: HttpServletRequest): String? {
-        return if ("X-AUTH-TOKEN" in request.headerNames.toList()) request.getHeader("X-AUTH-TOKEN") else null
+        return if ("x-auth-token" in request.headerNames.toList()) request.getHeader("X-AUTH-TOKEN") else null
     }
 
     // 토큰의 유효성 + 만료일자 확인
