@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.sql.Column
 import java.time.Instant
 
-object BoardAttachments: LongIdTable("board_attachment", "id") {
+object BoardAttachments : LongIdTable("board_attachment", "id") {
     /**
      * 게시물 ID
      */

@@ -3,7 +3,11 @@ package com.savog.doopooding.core.dao
 import com.google.common.base.CaseFormat
 import com.savog.doopooding.core.exposed.ColumnExpression
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.Expression
+import org.jetbrains.exposed.sql.ExpressionAlias
+import org.jetbrains.exposed.sql.QueryBuilder
+import org.jetbrains.exposed.sql.ResultRow
 import java.util.regex.Pattern
 
 open class BaseDao {
@@ -33,5 +37,4 @@ open class BaseDao {
             }
         }
     }
-
 }

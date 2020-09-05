@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.sql.Column
 import java.time.Instant
 
-object Boards: LongIdTable("board", "id") {
+object Boards : LongIdTable("board", "id") {
     val userId: Column<Long> = long("user_id")
 
     val title: Column<String> = varchar("title", 45)

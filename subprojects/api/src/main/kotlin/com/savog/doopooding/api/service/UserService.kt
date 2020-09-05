@@ -52,6 +52,5 @@ class UserService(
             logger.warn("user login fail, e")
             throw IllegalArgumentException("잘못된 로그인 정보입니다.", e)
         }
-
     }
 }

@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.sql.Column
 import java.time.Instant
 
-object SponsorshipFees: LongIdTable("sponsorship_fee", "id") {
+object SponsorshipFees : LongIdTable("sponsorship_fee", "id") {
     /**
      * 애완동물 ID
      */

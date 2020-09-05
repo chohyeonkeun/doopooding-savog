@@ -6,8 +6,13 @@ import com.savog.doopooding.core.model.UserRole
 import com.savog.doopooding.core.model.User
 import com.savog.doopooding.core.model.UserRoles
 import com.savog.doopooding.core.model.Users
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 

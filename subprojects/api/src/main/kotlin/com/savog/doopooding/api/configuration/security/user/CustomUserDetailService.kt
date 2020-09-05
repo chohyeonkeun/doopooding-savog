@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
 
 @Component
-class CustomUserDetailService(private val userDao: UserDao): UserDetailsService {
+class CustomUserDetailService(private val userDao: UserDao) : UserDetailsService {
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userDao.findByEmail(username)
