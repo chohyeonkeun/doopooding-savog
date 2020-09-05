@@ -1,6 +1,7 @@
 package com.savog.doopooding.api.service
 
 import com.savog.doopooding.api.configuration.security.JwtTokenProvider
+import com.savog.doopooding.core.Codes
 import com.savog.doopooding.core.dao.UserDao
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -17,13 +18,16 @@ class UserService(
 
     fun join(user: Map<String, Any>): Long {
         try {
+            val roles = if (user["roles"] != null) user["roles"] as List<String> else listOf(Codes.UserRoleType.GENERAL.value)
+
             val userId = userDao.create(
                 email = user["email"].toString(),
                 password = passwordEncoder.encode(user["password"].toString()),
                 nickname = user["nickname"].toString(),
                 type = user["type"].toString()
             )
-            userDao.batchCreateRolesByUserId(userId, roles = user["roles"] as List<String>)
+
+            userDao.batchCreateRolesByUserId(userId, roles = roles)
             return userId
         } catch (e: Exception) {
             logger.warn("user join fail", e)

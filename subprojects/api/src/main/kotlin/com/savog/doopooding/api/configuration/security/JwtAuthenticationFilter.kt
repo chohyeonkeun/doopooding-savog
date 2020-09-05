@@ -10,11 +10,11 @@ import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 
-class JwtAuthenticationFilter(private val jwtTokenProvider: JwtTokenProvider): GenericFilterBean() {
+class JwtAuthenticationFilter(private val jwtTokenProvider: JwtTokenProvider) : GenericFilterBean() {
     @Throws(IOException::class, ServletException:: class)
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         // 헤더에서 JWT를 받아온다.
-        val token: String = jwtTokenProvider.resolveToken(request as HttpServletRequest)
+        val token = jwtTokenProvider.resolveToken(request as HttpServletRequest)
 
         // 유효한 토큰인지 확인
         if (token != null && jwtTokenProvider.validateToken(token)) {

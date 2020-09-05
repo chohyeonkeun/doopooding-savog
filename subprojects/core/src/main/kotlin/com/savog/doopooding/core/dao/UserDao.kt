@@ -1,9 +1,10 @@
 package com.savog.doopooding.core.dao
 
 import com.savog.doopooding.core.Codes
-import com.savog.doopooding.core.model.Role
-import com.savog.doopooding.core.model.Roles
+import com.savog.doopooding.core.Constants
+import com.savog.doopooding.core.model.UserRole
 import com.savog.doopooding.core.model.User
+import com.savog.doopooding.core.model.UserRoles
 import com.savog.doopooding.core.model.Users
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -31,13 +32,13 @@ class UserDao : BaseDao() {
     fun batchCreateRolesByUserId(
         userId: Long,
         roles: List<String>,
-        creatorId: String = "system"
+        creatorId: String = Constants.SYSTEM_USERNAME
     ): List<ResultRow> {
-        return Roles.batchInsert(roles) { role ->
-            this[Roles.userId] = userId
-            this[Roles.role] = role
-            this[Roles.creatorId] = creatorId
-            this[Roles.updaterId] = creatorId
+        return UserRoles.batchInsert(roles) { role ->
+            this[UserRoles.userId] = userId
+            this[UserRoles.role] = role
+            this[UserRoles.creatorId] = creatorId
+            this[UserRoles.updaterId] = creatorId
         }
     }
 
@@ -59,10 +60,10 @@ class UserDao : BaseDao() {
             .firstOrNull()
     }
 
-    fun findRolesByEmail(email: String): List<Role>? {
-        return Roles
-            .join(Users, JoinType.LEFT, Roles.userId, Users.id)
+    fun findRolesByEmail(email: String): List<UserRole>? {
+        return UserRoles
+            .join(Users, JoinType.LEFT, UserRoles.userId, Users.id)
             .select(Users.email eq email)
-            .map { Role.wrapRow(it) }
+            .map { UserRole.wrapRow(it) }
     }
 }

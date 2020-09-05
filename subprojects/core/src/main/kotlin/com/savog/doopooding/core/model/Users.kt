@@ -19,7 +19,7 @@ object Users : LongIdTable("user", "id") {
     /**
      * 비밀번호
      */
-    val password: Column<String> = varchar("password", 30)
+    val password: Column<String> = varchar("password", 100)
 
     /**
      * 닉네임

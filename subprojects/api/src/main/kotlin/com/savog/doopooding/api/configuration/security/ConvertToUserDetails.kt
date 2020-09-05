@@ -39,5 +39,4 @@ class ConvertToUserDetails(
     override fun isAccountNonLocked(): Boolean {
         return true
     }
-
 }
