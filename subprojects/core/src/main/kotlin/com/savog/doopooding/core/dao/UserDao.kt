@@ -24,13 +24,13 @@ class UserDao : BaseDao() {
         email: String,
         password: String,
         nickname: String,
-        type: String = Codes.LoginType.EMAIL.value
+        loginType: String = Codes.LoginType.EMAIL.value
     ): Long {
         return Users.insertAndGetId { stmt ->
             stmt[this.email] = email
             stmt[this.password] = password
             stmt[this.nickname] = nickname
-            stmt[this.type] = type
+            stmt[this.loginType] = loginType
         }.value
     }
 

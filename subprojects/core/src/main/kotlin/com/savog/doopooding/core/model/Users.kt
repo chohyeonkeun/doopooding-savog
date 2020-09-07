@@ -10,6 +10,11 @@ import java.time.Instant
 
 object Users : LongIdTable("user", "id") {
     /**
+     * 회원명
+     */
+    val name: Column<String> = varchar("name", 45)
+
+    /**
      * 이메일 주소
      */
     val email: Column<String> = varchar("email", 45)
@@ -27,7 +32,7 @@ object Users : LongIdTable("user", "id") {
     /**
      * 로그인 유형
      */
-    val type: Column<String> = varchar("type", 30)
+    val loginType: Column<String> = varchar("login_type", 30)
 
     /**
      * 삭제 여부
@@ -46,13 +51,15 @@ object Users : LongIdTable("user", "id") {
 }
 
 class User(id: EntityID<Long>) : LongEntity(id) {
+    var name: String by Users.name
+
     var email: String by Users.email
 
     var password: String by Users.password
 
     var nickname: String by Users.nickname
 
-    var type: String by Users.type
+    var loginType: String by Users.loginType
 
     var deleted: Int by Users.deleted
 

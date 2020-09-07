@@ -1,6 +1,8 @@
 package com.savog.doopooding.api
 
+import com.savog.doopooding.client.login.SnsClientProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.http.MediaType
@@ -8,11 +10,15 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @SpringBootApplication
+@EnableConfigurationProperties(
+    SnsClientProperties::class
+)
 @ComponentScan(
     basePackages = [
         "com.savog.doopooding.api",
         "com.savog.doopooding.core",
-        "com.savog.doopooding.api.configuration"
+        "com.savog.doopooding.api.configuration",
+        "com.savog.doopooding.client.login"
     ]
 )
 class SavogApiServer : WebMvcConfigurer {
