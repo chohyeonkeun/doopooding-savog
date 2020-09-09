@@ -22,7 +22,7 @@ object Users : LongIdTable("user", "id") {
     /**
      * 비밀번호
      */
-    val password: Column<String> = varchar("password", 100)
+    val password: Column<String?> = varchar("password", 100).nullable()
 
     /**
      * 닉네임
@@ -55,7 +55,7 @@ class User(id: EntityID<Long>) : LongEntity(id) {
 
     var email: String by Users.email
 
-    var password: String by Users.password
+    var password: String? by Users.password
 
     var nickname: String by Users.nickname
 

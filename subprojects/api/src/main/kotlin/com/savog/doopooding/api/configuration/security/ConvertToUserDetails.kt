@@ -28,7 +28,7 @@ class ConvertToUserDetails(
         return true
     }
 
-    override fun getPassword(): String {
+    override fun getPassword(): String? {
         return user.password
     }
 

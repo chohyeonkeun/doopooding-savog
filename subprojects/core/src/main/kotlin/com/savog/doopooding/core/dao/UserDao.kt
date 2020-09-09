@@ -21,14 +21,16 @@ import org.springframework.transaction.annotation.Transactional
 class UserDao : BaseDao() {
 
     fun create(
+        name: String,
         email: String,
-        password: String,
+        password: String? = null,
         nickname: String,
         loginType: String = Codes.LoginType.EMAIL.value
     ): Long {
         return Users.insertAndGetId { stmt ->
+            stmt[this.name] = name
             stmt[this.email] = email
-            stmt[this.password] = password
+            password?.let { stmt[this.password] = it }
             stmt[this.nickname] = nickname
             stmt[this.loginType] = loginType
         }.value
@@ -42,8 +44,6 @@ class UserDao : BaseDao() {
         return UserRoles.batchInsert(roles) { role ->
             this[UserRoles.userId] = userId
             this[UserRoles.role] = role
-            this[UserRoles.creatorId] = creatorId
-            this[UserRoles.updaterId] = creatorId
         }
     }
 
