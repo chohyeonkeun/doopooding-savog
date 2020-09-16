@@ -12,6 +12,8 @@ dependencies {
     implementation("com.sun.xml.bind:jaxb-impl:2.3.1")
 //    api("org.springframework:spring-webmvc:3.1.1.RELEASE")
 
+    api "com.fasterxml.jackson.module:jackson-module-kotlin"
+
 }
 
 bootJar.enabled = true

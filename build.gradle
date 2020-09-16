@@ -17,6 +17,7 @@ buildscript {
         poiVersion = '4.1.0'
         hikariCpVersion = "3.4.1"
         javaJwtVersion = "0.9.1"
+        guavaVersion = '28.1-jre'
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
@@ -100,7 +101,6 @@ subprojects {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
             mavenBom "org.springframework.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}"
             mavenBom "com.amazonaws:aws-java-sdk-bom:${awsSdkVersion}"
-//            mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonJsonVersion}"
         }
 
         dependencies {

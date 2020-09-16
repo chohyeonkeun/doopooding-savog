@@ -16,6 +16,16 @@ dependencies {
     api "com.vividsolutions:jts:${vividsolutionsVersion}"
 
     api("com.zaxxer:HikariCP:${hikariCpVersion}")
-    api("com.google.guava:guava:29.0-jre")
-    implementation("org.springframework.boot:spring-boot-starter-security")
+    api("org.springframework.boot:spring-boot-starter-security")
+
+    api "org.springframework.cloud:spring-cloud-starter-aws:${springCloudAwsVersion}"
+
+    api "com.amazonaws:aws-java-sdk-ses:${awsSdkVersion}"
+    api "com.amazonaws:aws-java-sdk-sts:${awsSdkVersion}"
+    api "com.amazonaws:aws-java-sdk-s3:${awsSdkVersion}"
+    api "com.google.guava:guava:${guavaVersion}"
+
+    // mime type detector
+    api "org.apache.tika:tika-core:1.24"
+    api "org.apache.tika:tika-parsers:1.24"
 }
