@@ -1,6 +1,8 @@
 package com.savog.doopooding.api
 
 import com.savog.doopooding.client.login.SnsClientProperties
+import com.savog.doopooding.core.properties.AwsConfigurationProperties
+import com.savog.doopooding.core.properties.S3ConfigurationProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
@@ -11,7 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @SpringBootApplication
 @EnableConfigurationProperties(
-    SnsClientProperties::class
+    SnsClientProperties::class,
+    S3ConfigurationProperties::class,
+    AwsConfigurationProperties::class
 )
 @ComponentScan(
     basePackages = [
