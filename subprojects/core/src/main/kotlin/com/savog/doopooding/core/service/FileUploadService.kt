@@ -134,7 +134,7 @@ class FileUploadService(
             "$name-$uuid.$extension"
         }
         return if (isDev) {
-            "devlopment/$result"
+            "development/$result"
         } else {
             result
         }

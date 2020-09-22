@@ -23,6 +23,7 @@ object UploadConfig {
     }
 
     enum class Type(vararg extensions: Extensions) {
+        DEFAULT(Extensions.IMAGE, Extensions.PDF, Extensions.EXCEL, Extensions.ZIP),
         PET_ATTACHMENT(Extensions.IMAGE, Extensions.PDF, Extensions.EXCEL, Extensions.ZIP),
         BOARD_ATTACHMENT(Extensions.IMAGE, Extensions.PDF, Extensions.EXCEL, Extensions.ZIP);
 
