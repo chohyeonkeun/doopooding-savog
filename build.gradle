@@ -82,12 +82,12 @@ subprojects {
         runtimeOnly 'mysql:mysql-connector-java'
 
         // test
-        testApi("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
-            exclude module: 'junit'
-        }
+        testApi("org.springframework:spring-mock:2.0.8")
+        testApi("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
         testApi "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
         testApi "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
         testApi "org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}"
+//        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
 
         testApi "org.junit.platform:junit-platform-commons:${junitPlatformVersion}"
         testApi "org.junit.platform:junit-platform-engine:${junitPlatformVersion}"
