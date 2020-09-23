@@ -2,7 +2,7 @@ package com.savog.doopooding.core.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties("aws")
+@ConfigurationProperties("cloud.aws")
 class AwsConfigurationProperties {
     val credentials = Credentials()
     val region = Region()
