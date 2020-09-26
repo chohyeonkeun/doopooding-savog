@@ -1,8 +1,6 @@
 package com.savog.doopooding.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.google.protobuf.Message
 import com.savog.doopooding.client.login.SnsClientProperties
 import com.savog.doopooding.core.properties.AwsConfigurationProperties
 import com.savog.doopooding.core.properties.S3ConfigurationProperties
