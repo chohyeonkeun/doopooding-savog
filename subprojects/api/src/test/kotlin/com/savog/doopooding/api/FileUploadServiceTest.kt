@@ -41,7 +41,6 @@ class FileUploadServiceTest {
             assertThat(s3Object.bucket).isEqualTo("savog-pet-upload")
             assertThat(signedUrl).isNotNull()
 
-
             logger.info("file upload test success - ")
         } catch (e: IOException) {
             logger.warn("file upload test fail", e)
