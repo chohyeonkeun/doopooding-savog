@@ -20,6 +20,7 @@ class S3MockConfig {
     @Value("cloud.aws.s3.bucket")
     lateinit var bucket: String
 
+    // s3Mock : 로컬환경에 가상의 파일 서버를 생성해 실제 S3 bucket처럼 사용
     @Bean
     fun s3Mock(): S3Mock {
         return S3Mock.Builder().withPort(8001).withInMemoryBackend().build()
@@ -27,7 +28,7 @@ class S3MockConfig {
 
     @Bean
     @Primary
-    fun amazonS3(s3Mock: S3Mock): AmazonS3 {
+    fun amazonS3Mock(s3Mock: S3Mock): AmazonS3 {
         s3Mock.start()
         val endpoint = AwsClientBuilder.EndpointConfiguration("http://localhost:8001", region)
         val client = AmazonS3ClientBuilder

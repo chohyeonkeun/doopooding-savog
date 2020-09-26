@@ -4,13 +4,11 @@ import com.savog.doopooding.core.service.FileUploadService
 import com.savog.doopooding.core.util.UploadConfig
 import io.findify.s3mock.S3Mock
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.core.io.ClassPathResource
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
@@ -20,15 +18,15 @@ import java.io.IOException
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 @ActiveProfiles("test")
-@Import(S3MockConfig::class)
+//@Import(S3MockConfig::class)
 class FileUploadServiceTest {
     private val logger = LoggerFactory.getLogger(FileUploadServiceTest::class.simpleName)
 
     @Autowired
     private lateinit var fileUploadService: FileUploadService
 
-    @Autowired
-    private lateinit var s3Mock: S3Mock
+//    @Autowired
+//    private lateinit var s3Mock: S3Mock
 
     @Test
     fun requestUpload() {
@@ -41,7 +39,7 @@ class FileUploadServiceTest {
             assertThat(s3Object.bucket).isEqualTo("savog-pet-upload")
             assertThat(signedUrl).isNotNull()
 
-            logger.info("file upload test success - ")
+            logger.info("file upload test success")
         } catch (e: IOException) {
             logger.warn("file upload test fail", e)
             throw IOException(e)
@@ -51,8 +49,8 @@ class FileUploadServiceTest {
         }
     }
 
-    @After
-    fun shutdownMockS3() {
-        s3Mock.stop()
-    }
+//    @After
+//    fun shutdownMockS3() {
+//        s3Mock.stop()
+//    }
 }
