@@ -19,5 +19,5 @@ dependencies {
 
 bootJar.enabled = true
 bootJar {
-    mainClassName = 'com.savog.doopooding.api.ApplicationKt'
+    mainClassName = 'site.jonus.savog.api.ApplicationKt'
 }

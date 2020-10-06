@@ -58,11 +58,11 @@ class UserService(
             var nickname: String
             val loginType = loginParams["loginType"].toString()
 
-            return if (loginType == _root_ide_package_.site.jonus.savog.core.Codes.LoginType.SNS_NAVER.value) {
+            return if (loginType == Codes.LoginType.SNS_NAVER.value) {
                 // 네이버 아이디로 로그인한 경우
                 name = loginParams["name"].toString()
                 email = loginParams["email"].toString()
-                roles = listOf(_root_ide_package_.site.jonus.savog.core.Codes.UserRoleType.GENERAL.value)
+                roles = listOf(Codes.UserRoleType.GENERAL.value)
                 authToken = jwtTokenProvider.createToken(email, roles)
                 nickname = loginParams["nickname"].toString()
                 val user = userDao.findByEmail(email)

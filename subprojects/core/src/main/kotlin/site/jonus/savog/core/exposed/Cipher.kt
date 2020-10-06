@@ -24,20 +24,20 @@ class Cipher {
             return cipher
         }
         val encrypt: (String) -> String = {
-            val encrypted = _root_ide_package_.site.jonus.savog.core.exposed.Cipher.Companion.cipher(
+            val encrypted = cipher(
                 Cipher.ENCRYPT_MODE,
-                _root_ide_package_.site.jonus.savog.core.exposed.Cipher.Companion.secretKey
+                secretKey
             ).doFinal(it.toByteArray(Charsets.UTF_8))
-            String(_root_ide_package_.site.jonus.savog.core.exposed.Cipher.Companion.encoder.encode(encrypted))
+            String(encoder.encode(encrypted))
         }
         val decrypt: (String) -> String = {
             // FIXME: 기존 테이블 값들 암호화 후에 예외처리 해제 필요
             try {
-                val byteStr = _root_ide_package_.site.jonus.savog.core.exposed.Cipher.Companion.decoder.decode(it.toByteArray(Charsets.UTF_8))
+                val byteStr = decoder.decode(it.toByteArray(Charsets.UTF_8))
                 String(
-                    _root_ide_package_.site.jonus.savog.core.exposed.Cipher.Companion.cipher(
+                    cipher(
                         Cipher.DECRYPT_MODE,
-                        _root_ide_package_.site.jonus.savog.core.exposed.Cipher.Companion.secretKey
+                        secretKey
                     ).doFinal(byteStr))
             } catch (e: IllegalBlockSizeException) {
                 it
@@ -49,6 +49,6 @@ class Cipher {
 
     @Value("\${database.encryptionKey}")
     fun setKey(key: String) {
-        _root_ide_package_.site.jonus.savog.core.exposed.Cipher.Companion.secretKey = key
+        secretKey = key
     }
 }

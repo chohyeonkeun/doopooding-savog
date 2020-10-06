@@ -33,7 +33,7 @@ plugins {
 }
 
 allprojects {
-    group 'com.savog.doopooding'
+    group 'site.jonus.savog'
     version '1.0-SNAPSHOT'
 }
 
