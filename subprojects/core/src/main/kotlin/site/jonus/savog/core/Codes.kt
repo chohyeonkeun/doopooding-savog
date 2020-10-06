@@ -7,7 +7,7 @@ object Codes {
         EMAIL("이메일", "LOGTP_EMAIL");
 
         companion object {
-            fun getByValue(value: String): _root_ide_package_.site.jonus.savog.core.Codes.LoginType? = values().find { it.value == value }
+            fun getByValue(value: String): LoginType? = values().find { it.value == value }
         }
     }
     enum class UserRoleType(val label: String, val value: String) {
@@ -18,7 +18,7 @@ object Codes {
         GENERAL("일반회원", "UROTP_GENERAL");
 
         companion object {
-            fun getByValue(value: String): _root_ide_package_.site.jonus.savog.core.Codes.UserRoleType? = values().find { it.value == value }
+            fun getByValue(value: String): UserRoleType? = values().find { it.value == value }
         }
     }
 }

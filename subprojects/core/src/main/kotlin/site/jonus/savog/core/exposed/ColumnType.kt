@@ -278,12 +278,12 @@ fun <T : Any> Column<T>.nullable(): Expression<T> {
 // DB 암호화, 복호화
 class SecureString(colLength: Int = 255, collate: String? = null) : VarCharColumnType(colLength, collate) {
     override fun valueToDB(value: Any?): Any? {
-        if (value is String && value.isNotEmpty()) return _root_ide_package_.site.jonus.savog.core.exposed.Cipher.encrypt(
+        if (value is String && value.isNotEmpty()) return Cipher.encrypt(
             value
         )
         return null
     }
     override fun valueFromDB(value: Any): Any {
-        return _root_ide_package_.site.jonus.savog.core.exposed.Cipher.decrypt(value.toString())
+        return Cipher.decrypt(value.toString())
     }
 }
