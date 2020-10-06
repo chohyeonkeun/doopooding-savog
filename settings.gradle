@@ -1,4 +1,4 @@
-rootProject.name = 'doopooding-savog'
+rootProject.name = 'savog'
 
 include("api")
 include("client")
