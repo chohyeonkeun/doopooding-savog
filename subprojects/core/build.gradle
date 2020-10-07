@@ -31,6 +31,3 @@ dependencies {
     api "org.apache.tika:tika-core:1.24"
     api "org.apache.tika:tika-parsers:1.24"
 }
-
-jar.enabled = true
-bootJar.enabled = false
