@@ -19,15 +19,6 @@ dependencies {
 
 bootJar.enabled = true
 bootJar {
-    manifest {
-        mainClassName = 'site.jonus.savog.api.ApplicationKt'
-    }
-}
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'site.jonus.savog.api.ApplicationKt'
-        )
-    }
+    mainClassName = 'site.jonus.savog.api.ApplicationKt'
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/LICENSE'
 }
