@@ -102,6 +102,7 @@ subprojects {
     // 하위 프로젝트에선 특별한 버전 지정 없이 group:artifactId만 기술하면 의존성 추가됨.
     dependencyManagement {
         imports {
+            // BOM : 프로젝트 의존성 버전 제어를 위한 POM이며, version과 repository 등을 정의해줌
             mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
