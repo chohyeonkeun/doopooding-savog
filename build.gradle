@@ -23,7 +23,7 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
-        // Spring Boot 사용 시 executable jar나 war 패키징, 앱 실행, spring-boot-dependencies의 dependency management 기능 등을 사용할 수 있게 하는 플러그인
+        // Spring Boot 사용 시 executable jar나 war 패키징, 앱 실행, spring-boot-dependencies의 dependency management 기능 등을 사용할 수 있게 하는 플러그
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7")
     }
@@ -37,7 +37,8 @@ allprojects {
     group 'site.jonus.savog'
     version '1.0-SNAPSHOT'
 }
-
+// def subProjects = [project(':core'), project(':api'), project(':client'), project(':cronjob')]
+// subprojects {} == configure(subProjects) {}
 subprojects {
     apply plugin: 'kotlin'
     apply plugin: 'kotlin-spring'
@@ -96,8 +97,13 @@ subprojects {
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
     }
 
+    // 프로젝트에서 사용할 의존성 정의
+    // 어떤 artifact의 버전을 사용할지만 기술하고, 실제 의존성이 추가되는건 dependency에서 명시적으로 설정했을 때
+    // 하위 프로젝트에선 특별한 버전 지정 없이 group:artifactId만 기술하면 의존성 추가됨.
     dependencyManagement {
         imports {
+            // BOM : 프로젝트 의존성 버전 제어를 위한 POM이며, version과 repository 등을 정의해줌
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
             mavenBom "org.springframework.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}"
