@@ -21,7 +21,11 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        // kotlin에서 클래스는 기본 final이기 때문에 JPA에서 지연로딩시 entity를 상속받아 처리하는 proxy를 이용할 수 없다.
+        // 즉, 지연로딩을 할 수 없다. 이를 해결해주는 컴파일러 플러그인이다. 모든 entity를 open시켜준다.
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        // JPA entity들은 기본적으로 기본생성자가 필요하다. 하지만 주 생성자가 존재하면 기본생성자가 없다.
+        // @Entity가 붙은 클래스들에 한해서 자동으로 인자없는 생성자를 추가해준다.
         classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
         // Spring Boot 사용 시 executable jar나 war 패키징, 앱 실행, spring-boot-dependencies의 dependency management 기능 등을 사용할 수 있게 하는 플러그
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
