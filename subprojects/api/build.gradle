@@ -25,8 +25,3 @@ bootJar.enabled = true
 bootJar {
     mainClassName = 'site.jonus.savog.api.ApplicationKt'
 }
-bootJar {
-    manifest {
-        attributes 'Start-Class': 'site.jonus.savog.api.ApplicationKt'
-    }
-}
