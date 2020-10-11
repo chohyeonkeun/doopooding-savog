@@ -17,6 +17,10 @@ dependencies {
     testApi "io.findify:s3mock_2.13:0.2.6"
 }
 
+springBoot {
+    mainClassName = "site.jonus.savog.api.ApplicationKt"
+}
+
 bootJar.enabled = true
 bootJar {
     mainClassName = 'site.jonus.savog.api.ApplicationKt'
