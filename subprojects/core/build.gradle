@@ -12,18 +12,20 @@ dependencies {
     api("org.jetbrains.exposed:exposed:${exposedVersion}")
     api("org.jetbrains.exposed:spring-transaction:${exposedVersion}")
 
-    api "org.geolatte:geolatte-geom:${geolatteVersion}"
-    api "com.vividsolutions:jts:${vividsolutionsVersion}"
+    api("org.mariadb.jdbc:mariadb-java-client:2.5.1")
+
+    api("org.geolatte:geolatte-geom:${geolatteVersion}")
+    api("com.vividsolutions:jts:${vividsolutionsVersion}")
 
     api("com.zaxxer:HikariCP:${hikariCpVersion}")
     api("org.springframework.boot:spring-boot-starter-security")
 
-    api "org.springframework.cloud:spring-cloud-starter-aws:${springCloudAwsVersion}"
+    api("org.springframework.cloud:spring-cloud-starter-aws:${springCloudAwsVersion}")
 
-    api "com.amazonaws:aws-java-sdk-ses:${awsSdkVersion}"
-    api "com.amazonaws:aws-java-sdk-sts:${awsSdkVersion}"
-    api "com.amazonaws:aws-java-sdk-s3:${awsSdkVersion}"
-    api "com.google.guava:guava:${guavaVersion}"
+    api("com.amazonaws:aws-java-sdk-ses:${awsSdkVersion}")
+    api("com.amazonaws:aws-java-sdk-sts:${awsSdkVersion}")
+    api("com.amazonaws:aws-java-sdk-s3:${awsSdkVersion}")
+    api("com.google.guava:guava:${guavaVersion}")
 
     // mime type detector
     api "org.apache.tika:tika-core:1.24"
