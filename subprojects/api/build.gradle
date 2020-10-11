@@ -3,16 +3,16 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     implementation project(":client")
     implementation project(":core")
-    api("org.springframework.kotlin:spring-webmvc-kotlin-coroutine:${springKotlinCoroutineVersion}")
+    implementation("org.springframework.kotlin:spring-webmvc-kotlin-coroutine:${springKotlinCoroutineVersion}")
     implementation("io.jsonwebtoken:jjwt:${javaJwtVersion}")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
     implementation("com.sun.xml.bind:jaxb-core:2.3.0.1")
     implementation("com.sun.xml.bind:jaxb-impl:2.3.1")
-//    api("org.springframework:spring-webmvc:3.1.1.RELEASE")
+//    implementation("org.springframework:spring-webmvc:3.1.1.RELEASE")
 
-    api "com.fasterxml.jackson.module:jackson-module-kotlin"
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testApi "io.findify:s3mock_2.13:0.2.6"
 }
