@@ -1,20 +1,14 @@
 language: java
 
-jdk:
-  - openjdk8
-
-# Travis CI를 어느 브랜치가 푸시될 때 수행할지 지정
-# 현재 옵션은 오직 master 브런치에 push될 때만 수행
-branches:
-  only:
-    - master
-
 # Travis CI 서버의 Home
 # 그레이들을 통해 의존성을 받게 되면 이를 해당 디렉토리에 캐시하여, 같은 의존성은 다음 배포때부터 다시 받지 않도록 한다.
 cache:
   directories:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
+    - "$HOME/dist/"
+
+os: osx
 
 stages:
   - frontend
@@ -26,19 +20,32 @@ jobs:
     - stage: frontend
       language: node_js
       node_js:
-        - lts/*
+        - "14"
+      branches:
+        only:
+          - master
       cache: npm
+      before_install:
+        - cd subprojects/frontend/management
+        - npm i -g npm@6.14.7
       install:
         - npm install
+      before_script:
+        - cd subprojects/frontend/management
       script:
         - npm run build
     - stage: backend
       language: java
       jdk: openjdk8
+      branches:
+        only:
+          - master
       script:
-        - ./gradlew clean
-        - ./gradlew build --build-cache -DIS_CI=true -x test
+        - ./gradlew clean build --build-cache -DIS_CI=true -x test
     - stage: deploy
+      branches:
+        only:
+          - master
       # AWS CodeDeploy는 Jar 파일은 인식하지 못하므로 Jar+기타 설정 파일들을 모아 압축(zip)한다.
       before_deploy:
         # 현재 위치의 모든 파일을 savog 이름으로 압축
@@ -56,7 +63,7 @@ jobs:
           local_dir: deploy # before_deploy에서 생성한 디렉토리 (해당 디렉토리 위치의 파일들만 S3로 전송)
           wait-until-deployed: true
 
-# CI 실행 완료 시 자동으로 메일 알람
+          # CI 실행 완료 시 자동으로 메일 알람
 notifications:
   email:
     recipients:
