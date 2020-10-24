@@ -30,8 +30,6 @@ jobs:
         - npm i -g npm@6.14.7
       install:
         - npm install
-      before_script:
-        - cd subprojects/frontend/management
       script:
         - npm run build
     - stage: backend
@@ -63,7 +61,7 @@ jobs:
           local_dir: deploy # before_deploy에서 생성한 디렉토리 (해당 디렉토리 위치의 파일들만 S3로 전송)
           wait-until-deployed: true
 
-          # CI 실행 완료 시 자동으로 메일 알람
+# CI 실행 완료 시 자동으로 메일 알람
 notifications:
   email:
     recipients:
