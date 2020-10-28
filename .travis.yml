@@ -39,7 +39,7 @@ jobs:
         only:
           - master
       script:
-        - ./gradlew clean build --build-cache -DIS_CI=true -x test
+        - ./gradlew clean build --build-cache -x test
     - stage: deploy
       branches:
         only:
