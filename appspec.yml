@@ -4,3 +4,15 @@ files:
   - source: /   # CodeDeploy에서 전달해 준 파일 중 destination으로 이동시킬 대상 지정 (루트 경로(/)를 지정하면 전체파일을 의미)
     destination: /home/ec2-user/app/step2/zip/   # source에서 지정된 파일을 받을 위치
     overwrite: yes
+
+permissions:  # CodeDeploy에서 EC2 서버로 넘겨준 파일들을 모두 ec2-user 권한 갖도록 함
+  - object: /
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
+
+hooks:
+  ApplicationStart:
+    - location: deploy.sh  # ApplicationStart 단계에서 deploy.sh를 ec2-user 권한으로 실행
+      timeout: 60  # 스크립트 실행 60초 이상 수행되면 실패
+      runas: ec2-user
