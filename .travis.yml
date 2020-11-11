@@ -28,6 +28,9 @@ jobs:
       node_js:
         - "14"
       cache: npm
+      branches:
+        only:
+          - master
       before_install:
         - cd subprojects/frontend/management
         - npm i -g npm@6.14.7
@@ -37,10 +40,16 @@ jobs:
         - npm run build
     - stage: backend
       language: java
+      branches:
+        only:
+          - master
       script:
         - ./gradlew clean build --build-cache -x test
     - stage: deploy
       # AWS CodeDeploy는 Jar 파일은 인식하지 못하므로 Jar+기타 설정 파일들을 모아 압축(zip)한다.
+      branches:
+        only:
+          - master
       before_deploy:
         # 현재 위치의 모든 파일을 savog 이름으로 압축
         - mkdir -p before-deploy  # zip에 포함시킬 파일들을 담을 디렉토리 생성
