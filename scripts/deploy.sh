@@ -6,9 +6,13 @@ PROJECT_NAME=savog
 echo "> Build 파일복사"
 cp $REPOSITORY/zip/*.jar $REPOSITORY/
 
+JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
+
+echo "> JAR NAME: $JAR_NAME"
+
 echo "> 현재 구동 중인 애플리케이션 pid 확인"
 
-CURRENT_PID=$(pgrep -fl savog-jonus-webservice | grep jar | awk '{print $1}')
+CURRENT_PID=$(pgrep -f $JAR_NAME)
 
 echo "현재 구동 중인 애플리케이션 pid : $CURRENT_PID"
 
@@ -21,10 +25,6 @@ else
 fi
 
 echo "> 새 애플리케이션 배포"
-
-JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
-
-echo "> JAR NAME: $JAR_NAME"
 
 echo "> JAR_NAME 에 실행권한 추가"
 
