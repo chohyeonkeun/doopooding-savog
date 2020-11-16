@@ -3,8 +3,26 @@
 REPOSITORY=/home/ec2-user/app/step2
 PROJECT_NAME=savog
 
+echo "> nginx 설치"
+sudo yum install nginx
+
+echo "> nginx 버젼 확인"
+nginx -v
+
+echo "> nginx 설정파일을 /etc/nginx/conf.d/default.conf/로 카피"
+cp $REPOSITORY/zip/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
+echo "> dist 파일을 /usr/share/nginx/html/로 카피"
+cp $REPOSITORY/zip/frontend/dist /usr/share/nginx/html
+
+echo "> nginx 문법 체크"
+sudo nginx -t
+
+echo "> nginx 재시작"
+sudo systemctl restart nginx
+
 echo "> Build 파일복사"
-cp $REPOSITORY/zip/*.jar $REPOSITORY/
+cp $REPOSITORY/zip/backend/*.jar $REPOSITORY/
 
 JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
 
