@@ -38,6 +38,7 @@ jobs:
         - npm install
       script:
         - npm run build
+        - ls
     - stage: backend
       language: java
       branches:
@@ -55,9 +56,8 @@ jobs:
         - mkdir -p before-deploy/frontend && mkdir before-deploy/backend # zip에 포함시킬 파일들을 담을 디렉토리 생성
         - cp scripts/*.sh before-deploy/
         - cp appspec.yml before-deploy/
-        - find / -name dist
-        - cp dist before-deploy/frontend/
-        - cp subprojects/frontend/management/dist before-deploy/frontend/
+        - ls /Users/travis/
+        - cp /Users/travis/dist before-deploy/frontend/
         - cp subprojects/frontend/management/nginx.conf before-deploy/frontend/
         - cp subprojects/api/build/libs/*.jar before-deploy/backend/
         - cd before-deploy && zip -r before-deploy *  # before-deploy로 이동 후 전체 압축
