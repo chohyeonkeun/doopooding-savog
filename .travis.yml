@@ -39,8 +39,8 @@ jobs:
       script:
         - ls /Users/travis/
         - npm run build
-        - mkdir -p /Users/travis/savog/before-deploy/frontend
-        - mv dist /Users/travis/savog/before-deploy/frontend/
+        - mkdir -p /Users/travis/build/jonusHK/savog/before-deploy/frontend
+        - mv dist /Users/travis/build/jonusHK/savog/before-deploy/frontend/
     - stage: backend
       language: java
       branches:
@@ -54,7 +54,6 @@ jobs:
         only:
           - master
       before_deploy:
-        - pwd
         # 현재 위치의 모든 파일을 savog 이름으로 압축
         - mkdir -p before-deploy/backend # zip에 포함시킬 파일들을 담을 디렉토리 생성
         - cp scripts/*.sh before-deploy/
