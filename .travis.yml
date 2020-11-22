@@ -12,7 +12,7 @@ cache:
   directories:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
-    - "$HOME/dist/"
+    - "$HOME/subprojects/frontend/management/dist/"
 
 os: osx
 
@@ -38,6 +38,7 @@ jobs:
         - npm install
       script:
         - npm run build
+        - ls
     - stage: backend
       language: java
       branches:
@@ -45,20 +46,21 @@ jobs:
           - master
       script:
         - ./gradlew clean build --build-cache -x test
+        - mkdir testDirectory
+        - ls subprojects/frontend/management/
     - stage: deploy
       # AWS CodeDeploy는 Jar 파일은 인식하지 못하므로 Jar+기타 설정 파일들을 모아 압축(zip)한다.
       branches:
         only:
           - master
       before_deploy:
-        - find / -name dist
-        - ls /Users/travis
         # zip에 포함시킬 파일들을 담을 디렉토리 생성
+        - ls
         - mkdir -p before-deploy/frontend
         - mkdir -p before-deploy/backend
         - cp scripts/*.sh before-deploy/
         - cp appspec.yml before-deploy/
-        - mv /Users/travis/dist before-deploy/frontend/
+        - mv subprojects/frontend/management/dist before-deploy/frontend/
         - cp subprojects/frontend/management/nginx.conf before-deploy/frontend/
         - cp subprojects/api/build/libs/*.jar before-deploy/backend/
         - cd before-deploy && zip -r before-deploy *  # before-deploy로 이동 후 전체 압축
