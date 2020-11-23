@@ -12,77 +12,47 @@ cache:
 
 os: osx
 
-stages:
-  - frontend
-  - backend
-  - deploy
+branches:
+  only:
+    - master
 
-jobs:
-  include:
-    - stage: frontend
-      language: node_js
-      node_js:
-        - "14"
-      cache: npm
-      branches:
-        only:
-          - master
-      before_install:
-        - cd subprojects/frontend/management
-        - npm i -g npm@6.14.7
-      install:
-        - npm install
-      script:
-        - npm run build
-      after_success:
-        - ls
-        - mkdir -p /Users/travis/build/jonusHK/savog/before-deploy/frontend
-        - mv subprojects/frontend/management/dist /Users/travis/build/jonusHK/savog/before-deploy/frontend/
-    - stage: backend
-      language: java
-      branches:
-        only:
-          - master
-      script:
-        - ./gradlew clean build --build-cache -x test
-    - stage: deploy
-      # AWS CodeDeploy는 Jar 파일은 인식하지 못하므로 Jar+기타 설정 파일들을 모아 압축(zip)한다.
-      branches:
-        only:
-          - master
-      before_deploy:
-        # zip에 포함시킬 파일들을 담을 디렉토리 생성
-        - pwd
-        - ls
-        - ls before-deploy/frontend
-        - mkdir -p before-deploy/backend
-        - cp scripts/*.sh before-deploy/
-        - cp appspec.yml before-deploy/
-        - cp subprojects/frontend/management/nginx.conf before-deploy/frontend/
-        - cp subprojects/api/build/libs/*.jar before-deploy/backend/
-        - cd before-deploy && zip -r before-deploy *  # before-deploy로 이동 후 전체 압축
-        - cd ../ && mkdir -p deploy  # 상위 디렉토리 이동후 deploy 디렉토리 생성
-        - mv before-deploy/before-deploy.zip deploy/savog.zip
-      deploy:
-        - provider: s3
-          access_key_id: $AWS_ACCESS_KEY # Travis repo settings 설정 값
-          secret_access_key: $AWS_SECRET_KEY # Travis repo settings 설정 값
-          bucket: savog-jonus-webservice-build # S3 버킷
-          region: ap-northeast-2
-          skip_cleanup: true
-          acl: private # zip 파일 접근을 private으로
-          local_dir: deploy # before_deploy에서 생성한 디렉토리 (해당 디렉토리 위치의 파일들만 S3로 전송)
-          wait-until-deployed: true
-        - provider: codedeploy
-          access_key_id: $AWS_ACCESS_KEY
-          secret_access_key: $AWS_SECRET_KEY
-          bucket: savog-jonus-webservice-build
-          key: savog.zip  # 빌드 파일을 압축해서 전달
-          bundle_type: zip  # 압축 확장자
-          application: savog-jonus-webservice  # 웹 콘솔에서 등록한 CodeDeploy 애플리케이션
-          deployment_group: savog-jonus-webservice-group  # 웹 콘솔에서 등록한 CodeDeploy 배포그룹
-          region: ap-northeast-2
-          wait-until-deployed: true
+script:
+  - ./gradlew clean build --build-cache -x test
+
+before_deploy:
+  # zip에 포함시킬 파일들을 담을 디렉토리 생성
+  - pwd
+  - ls
+  - mkdir -p before-deploy/frontend
+  - mkdir -p before-deploy/backend
+  - cp scripts/*.sh before-deploy/
+  - cp appspec.yml before-deploy/
+  - mv subprojects/frontend/management before-deploy/frontend/
+  - cp subprojects/api/build/libs/*.jar before-deploy/backend/
+  - cd before-deploy && zip -r before-deploy *  # before-deploy로 이동 후 전체 압축
+  - cd ../ && mkdir -p deploy  # 상위 디렉토리 이동후 deploy 디렉토리 생성
+  - mv before-deploy/before-deploy.zip deploy/savog.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY # Travis repo settings 설정 값
+    secret_access_key: $AWS_SECRET_KEY # Travis repo settings 설정 값
+    bucket: savog-jonus-webservice-build # S3 버킷
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private # zip 파일 접근을 private으로
+    local_dir: deploy # before_deploy에서 생성한 디렉토리 (해당 디렉토리 위치의 파일들만 S3로 전송)
+    wait-until-deployed: true
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: savog-jonus-webservice-build
+    key: savog.zip  # 빌드 파일을 압축해서 전달
+    bundle_type: zip  # 압축 확장자
+    application: savog-jonus-webservice  # 웹 콘솔에서 등록한 CodeDeploy 애플리케이션
+    deployment_group: savog-jonus-webservice-group  # 웹 콘솔에서 등록한 CodeDeploy 배포그룹
+    region: ap-northeast-2
+    wait-until-deployed: true
 
 # CI 실행 완료 시 자동으로 메일 알람
 notifications:

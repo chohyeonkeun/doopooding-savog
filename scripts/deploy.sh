@@ -10,10 +10,16 @@ echo "> nginx 버젼 확인"
 nginx -v
 
 echo "> nginx 설정파일을 /etc/nginx/conf.d/default.conf/로 카피"
-cp $REPOSITORY/zip/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+cp $REPOSITORY/zip/frontend/management/nginx.conf /etc/nginx/conf.d/default.conf
+
+echo "> cd $REPOSITORY/zip/frontend/management/"
+cd $REPOSITORY/zip/frontend/managmenet
+
+echo "> npm run build"
+npm run build
 
 echo "> dist 파일을 /usr/share/nginx/html/로 카피"
-cp $REPOSITORY/zip/frontend/dist /usr/share/nginx/html
+cp $REPOSITORY/zip/frontend/management/dist /usr/share/nginx/html
 
 echo "> nginx 문법 체크"
 sudo nginx -t
