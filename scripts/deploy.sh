@@ -10,16 +10,19 @@ echo "> nginx 버젼 확인"
 nginx -v
 
 echo "> nginx 설정파일을 /etc/nginx/conf.d/default.conf/로 복사"
-cp $REPOSITORY/zip/frontend/management/nginx.conf /etc/nginx/conf.d/default.conf
+sudo cp $REPOSITORY/zip/frontend/management/nginx.conf /etc/nginx/conf.d/default.conf
 
 echo "> cd $REPOSITORY/zip/frontend/management/"
 cd $REPOSITORY/zip/frontend/management
 
-echo "> npm run build"
-npm run build
+echo "> npm install"
+sudo npm install
 
-echo "> dist 파일을 /usr/share/nginx/html/로 복사"
-cp $REPOSITORY/zip/frontend/management/dist /usr/share/nginx/html
+echo "> npm run build"
+sudo npm run build
+
+echo "> dist 디렉토리를 /usr/share/nginx/html/로 이동"
+sudo mv $REPOSITORY/zip/frontend/management/dist /usr/share/nginx/html
 
 echo "> nginx 문법 체크"
 sudo nginx -t
@@ -28,15 +31,15 @@ echo "> nginx 재시작"
 sudo systemctl restart nginx
 
 echo "> Build 파일복사"
-cp $REPOSITORY/zip/backend/*.jar $REPOSITORY/
+sudo cp $REPOSITORY/zip/backend/*.jar $REPOSITORY/
 
-JAR_NAME=$(ls -tr $REPOSITORY/*.jar | cut -f 6 -d "/")
+JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
 
 echo "> JAR NAME: $JAR_NAME"
 
 echo "> 현재 구동 중인 애플리케이션 pid 확인"
 
-CURRENT_PID=$(pgrep -f $JAR_NAME)
+CURRENT_PID=$(pgrep -f $REPOSITORY/*.jar | cut -f 6 -d "/")
 
 echo "현재 구동 중인 애플리케이션 pid : $CURRENT_PID"
 
