@@ -28,7 +28,7 @@ echo "> nginx 문법 체크"
 sudo nginx -t
 
 echo "> nginx 재시작"
-sudo systemctl restart nginx
+sudo sudo service nginx restart
 
 echo "> Build 파일복사"
 sudo cp $REPOSITORY/zip/backend/*.jar $REPOSITORY/
