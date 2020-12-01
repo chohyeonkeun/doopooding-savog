@@ -14,6 +14,7 @@ class PetService : BaseService() {
         adoptionState: String?,
         birthDate: String?
     ) {
+
     }
 
     fun getPetById(id: Long) {
