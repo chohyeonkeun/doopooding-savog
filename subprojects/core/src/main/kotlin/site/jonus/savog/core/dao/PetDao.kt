@@ -1,10 +1,8 @@
 package site.jonus.savog.core.dao
 
-import site.jonus.savog.core.Constants
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Expression
 import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
@@ -17,6 +15,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import site.jonus.savog.core.Constants
 import site.jonus.savog.core.model.Categories
 import site.jonus.savog.core.model.Managers
 import site.jonus.savog.core.model.Pet
@@ -34,17 +33,17 @@ class PetDao : BaseDao() {
         breeds: String,
         gender: String,
         weight: Int,
-        adoptionState: String,
+        adoptionStatus: String,
         birthDate: LocalDate,
         creatorId: String
-    ) : Long {
+    ): Long {
         return Pets.insertAndGetId { stmt ->
             stmt[this.type] = type
             stmt[this.name] = name
             stmt[this.breeds] = breeds
             stmt[this.gender] = gender
             stmt[this.weight] = weight
-            stmt[this.adoptionState] = adoptionState
+            stmt[this.adoptionStatus] = adoptionStatus
             stmt[this.birthDate] = birthDate
             stmt[this.creatorId] = creatorId
             stmt[this.updaterId] = creatorId
@@ -52,22 +51,24 @@ class PetDao : BaseDao() {
     }
 
     fun count(
+        ids: List<Long>? = null,
         type: String? = null,
         name: String? = null,
         breeds: String? = null,
         gender: String? = null,
-        adoptionState: String? = null,
+        adoptionStatus: String? = null,
         birthStDate: LocalDate? = null,
         birthEdDate: LocalDate? = null,
         creatorId: String? = null,
         updaterId: String? = null
-    ) : Int {
+    ): Int {
         val conditions = listOfNotNull(
+            ids?.let { Pets.id inList it },
             type?.let { Pets.type eq it },
             name?.let { Pets.name eq it },
             breeds?.let { Pets.breeds eq it },
             gender?.let { Pets.gender eq it },
-            adoptionState?.let { Pets.adoptionState eq it },
+            adoptionStatus?.let { Pets.adoptionStatus eq it },
             birthStDate?.let { Pets.birthDate greaterEq it },
             birthEdDate?.let { Pets.birthDate lessEq it },
             creatorId?.let { Pets.creatorId eq it },
@@ -79,25 +80,27 @@ class PetDao : BaseDao() {
     }
 
     fun search(
+        ids: List<Long>? = null,
         type: String? = null,
         name: String? = null,
         breeds: String? = null,
         gender: String? = null,
-        adoptionState: String? = null,
+        adoptionStatus: String? = null,
         birthStDate: LocalDate? = null,
         birthEdDate: LocalDate? = null,
         creatorId: String? = null,
         updaterId: String? = null,
         limit: Int = Constants.Paging.DEFAULT_LIMIT,
         offset: Int = Constants.Paging.DEFAULT_OFFSET
-    ) : List<Pet?> {
+    ): List<Pet?> {
         val model = Pets.slice(Pets.columns)
         val conditions = listOfNotNull(
+            ids?.let { Pets.id inList it },
             type?.let { Pets.type eq it },
             name?.let { Pets.name eq it },
             breeds?.let { Pets.breeds eq it },
             gender?.let { Pets.gender eq it },
-            adoptionState?.let { Pets.adoptionState eq it },
+            adoptionStatus?.let { Pets.adoptionStatus eq it },
             birthStDate?.let { Pets.birthDate greaterEq it },
             birthEdDate?.let { Pets.birthDate lessEq it },
             creatorId?.let { Pets.creatorId eq it },
@@ -117,17 +120,17 @@ class PetDao : BaseDao() {
         name: String? = null,
         breeds: String? = null,
         weight: Int? = null,
-        adoptionState: String? = null,
+        adoptionStatus: String? = null,
         birthDate: LocalDate? = null,
         deleted: Int? = null,
         updaterId: String = Constants.SYSTEM_USERNAME
-    ) : Int {
+    ): Int {
         return Pets.update({ Pets.id eq petId }) { stmt ->
             type?.let { stmt[this.type] = it }
             name?.let { stmt[this.name] = it }
             breeds?.let { stmt[this.breeds] = it }
             weight?.let { stmt[this.weight] = it }
-            adoptionState?.let { stmt[this.adoptionState] = it }
+            adoptionStatus?.let { stmt[this.adoptionStatus] = it }
             birthDate?.let { stmt[this.birthDate] = it }
             deleted?.let { stmt[this.deleted] = it }
             stmt[this.updaterId] = updaterId
@@ -145,7 +148,7 @@ class PetDao : BaseDao() {
         content: String? = null,
         showOnTop: Int? = null,
         deleted: Int? = null
-    ) : Int {
+    ): Int {
         val model = PetHistories
             .join(Managers, JoinType.LEFT, PetHistories.managerId, Managers.id)
             .join(Users, JoinType.LEFT, Managers.userId, Users.id)
