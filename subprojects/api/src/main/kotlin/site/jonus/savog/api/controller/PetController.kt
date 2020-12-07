@@ -1,7 +1,5 @@
 package site.jonus.savog.api.controller
 
-import site.jonus.savog.api.ResultJson
-import site.jonus.savog.api.service.PetService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -11,20 +9,24 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import site.jonus.savog.api.ResultJson
+import site.jonus.savog.api.service.PetService
 
 @RestController
 @RequestMapping("/v1", name = "두푸딩 세이보그 유기동물")
 class PetController(private val petService: PetService) : BaseController() {
     @GetMapping("/pets", name = "세이보그 유기동물 조회")
     fun getPets(
-        @RequestParam("id") ids: List<String>?,
+        @RequestParam("id") ids: List<Long>?,
         @RequestParam("type") type: String?,
         @RequestParam("name") name: String?,
         @RequestParam("breeds") breeds: String?,
         @RequestParam("gender") gender: String?,
-        @RequestParam("weight") weight: Int?,
-        @RequestParam("adoptionState") adoptionState: String?,
-        @RequestParam("birthDate") birthDate: String?
+        @RequestParam("adoptionStatus") adoptionStatus: String?,
+        @RequestParam("birthStDate") birthStDate: Long?,
+        @RequestParam("birthEdDate") birthEdDate: Long?,
+        @RequestParam("limit") limit: Int?,
+        @RequestParam("offset") offset: Int?
     ): ResultJson {
         return ResultJson.withData(petService.getPets(
             ids = ids,
@@ -32,9 +34,11 @@ class PetController(private val petService: PetService) : BaseController() {
             name = name,
             breeds = breeds,
             gender = gender,
-            weight = weight,
-            adoptionState = adoptionState,
-            birthDate = birthDate
+            adoptionStatus = adoptionStatus,
+            birthStDate = birthStDate,
+            birthEdDate = birthEdDate,
+            limit = limit,
+            offset = offset
         ))
     }
 
@@ -49,12 +53,12 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PutMapping("/pets", name = "세이보그 유기동물 수정")
-    fun updatePat(@RequestBody updateParams: Map<String, Any>): ResultJson {
+    fun updatePet(@RequestBody updateParams: Map<String, Any>): ResultJson {
         return ResultJson.withData(petService.updatePet(updateParams))
     }
 
     @DeleteMapping("/pets", name = "세이보그 유기동물 일괄 삭제")
-    fun batchDeletePat(@RequestBody deleteParams: Map<String, Any>): ResultJson {
+    fun batchDeletePet(@RequestBody deleteParams: Map<String, Any>): ResultJson {
         return ResultJson.withData(petService.batchDeletePet(deleteParams))
     }
 }

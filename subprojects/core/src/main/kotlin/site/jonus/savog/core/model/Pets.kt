@@ -39,7 +39,7 @@ object Pets : LongIdTable("pet", "id") {
     /**
      * 입양 현황
      */
-    val adoptionState: Column<String> = varchar("adoption_state", 30)
+    val adoptionStatus: Column<String> = varchar("adoption_status", 30)
 
     /**
      * 출생일
@@ -83,7 +83,7 @@ class Pet(id: EntityID<Long>) : LongEntity(id) {
 
     var weight: Int by Pets.weight
 
-    var adoptionState: String by Pets.adoptionState
+    var adoptionStatus: String by Pets.adoptionStatus
 
     var birthDate: LocalDate by Pets.birthDate
 

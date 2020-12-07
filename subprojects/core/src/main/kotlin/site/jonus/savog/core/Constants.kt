@@ -8,7 +8,7 @@ object Constants {
 
     object Paging {
         const val DEFAULT_OFFSET = 0
-        const val DEFAULT_LIMIT = 10
+        const val DEFAULT_LIMIT = 30
     }
 
     enum class LoggingType {
