@@ -119,6 +119,7 @@ class PetDao : BaseDao() {
         type: String? = null,
         name: String? = null,
         breeds: String? = null,
+        gender: String? = null,
         weight: Int? = null,
         adoptionStatus: String? = null,
         birthDate: LocalDate? = null,
@@ -129,6 +130,7 @@ class PetDao : BaseDao() {
             type?.let { stmt[this.type] = it }
             name?.let { stmt[this.name] = it }
             breeds?.let { stmt[this.breeds] = it }
+            gender?.let { stmt[this.gender] = it }
             weight?.let { stmt[this.weight] = it }
             adoptionStatus?.let { stmt[this.adoptionStatus] = it }
             birthDate?.let { stmt[this.birthDate] = it }
