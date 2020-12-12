@@ -6,12 +6,18 @@ import site.jonus.savog.api.dto.PetDetailDto
 import site.jonus.savog.api.dto.PetHistoryListDto
 import site.jonus.savog.api.dto.PetListDto
 import site.jonus.savog.core.Constants
+import site.jonus.savog.core.dao.PetAttachmentDao
 import site.jonus.savog.core.dao.PetDao
+import site.jonus.savog.core.service.FileUploadService
 import java.time.Instant
 import java.time.ZoneId
 
 @Service
-class PetService(private val petDao: PetDao) : BaseService() {
+class PetService(
+    private val petDao: PetDao,
+    private val attachmentDao: PetAttachmentDao,
+    private val fileUploadService: FileUploadService
+) : BaseService() {
     private val logger = LoggerFactory.getLogger(PetService::class.simpleName)
     fun getPets(
         ids: List<Long>? = null,
@@ -145,6 +151,7 @@ class PetService(private val petDao: PetDao) : BaseService() {
     }
 
     fun createPet(params: Map<String, Any>): Long {
+        val attachments = params["attachments"] as List<Map<String, Any>>
         val type = params["type"].toString()
         val name = params["name"].toString()
         val breeds = params["breeds"].toString()
@@ -155,7 +162,7 @@ class PetService(private val petDao: PetDao) : BaseService() {
         val creatorId = params["creatorId"].toString()
 
         try {
-            return petDao.create(
+            val petId = petDao.create(
                 type = type,
                 name = name,
                 breeds = breeds,
@@ -165,6 +172,20 @@ class PetService(private val petDao: PetDao) : BaseService() {
                 birthDate = birthDate,
                 creatorId = creatorId
             )
+
+            attachments.map { attachment ->
+                val newObject = fileUploadService.preserve("pet-attachment", attachment["bucket"].toString(), attachment["key"].toString())
+                attachmentDao.upsertPetAttachment(
+                    petId = petId,
+                    type = attachment["type"].toString(),
+                    bucket = newObject.bucket,
+                    key = newObject.key,
+                    filename = attachment["filename"].toString(),
+                    updaterId = creatorId
+                )
+            }
+
+            return petId
         } catch (e: Exception) {
             logger.warn("create pet fail", e)
             throw e
@@ -173,6 +194,8 @@ class PetService(private val petDao: PetDao) : BaseService() {
 
     fun updatePet(params: Map<String, Any>): Boolean {
         val petId = params["petId"].toString().toLong()
+        val attachments = params["attachments"]?.let { it as List<Map<String, Any>> }
+        val clearAttachments = params["clearAttachments"]?.let { it as Boolean }
         val type = params["type"]?.toString()
         val name = params["name"]?.toString()
         val breeds = params["breeds"]?.toString()
@@ -197,6 +220,42 @@ class PetService(private val petDao: PetDao) : BaseService() {
                 updaterId = updaterId
             )
 
+            val prevAttachments = attachmentDao.findPetAttachmentByPetId(petId)
+            attachments?.let {
+                val attachmentIds = attachments?.mapNotNull { attachment ->
+                    val attachmentId = attachment["attachmentId"]?.toString()?.toLong()
+                    val newObject = attachmentId?.let {
+                        fileUploadService.preserve("pet-attachment", attachment["bucket"].toString(), attachment["key"].toString())
+                    }
+                    if (attachment.count() > 0) {
+                        attachmentDao.upsertPetAttachment(
+                            petId = petId,
+                            type = attachment["type"].toString(),
+                            bucket = newObject?.bucket,
+                            key = newObject?.key,
+                            filename = attachment["filename"].toString(),
+                            id = attachmentId,
+                            updaterId = updaterId
+                        )
+                    }
+                    attachmentId
+                }
+
+                // 삭제 요청된 이전 첨부파일 삭제
+                val prevAttachmentIdsToDelete = prevAttachments?.mapNotNull {
+                    if (!attachmentIds.contains(it.id.value)) {
+                        it.id.value
+                    } else null
+                }
+                if (prevAttachmentIdsToDelete.count() > 0) {
+                    attachmentDao.deletePetAttachment(prevAttachmentIdsToDelete, updaterId = updaterId)
+                }
+            }
+
+            if (clearAttachments !== null && clearAttachments) {
+                attachmentDao.deletePetAttachment(prevAttachments.map { it.id.value }, updaterId = updaterId)
+            }
+
             return true
         } catch (e: Exception) {
             logger.warn("update pet fail", e)
@@ -205,7 +264,7 @@ class PetService(private val petDao: PetDao) : BaseService() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun batchDeletePet(deleteParams: Map<String, Any>): Boolean {
+    fun batchDeletePetHistory(deleteParams: Map<String, Any>): Boolean {
         val targetIds = deleteParams["targetIds"] as List<Long>
         val updaterId = deleteParams["updaterId"].toString()
 
@@ -214,7 +273,7 @@ class PetService(private val petDao: PetDao) : BaseService() {
 
             return true
         } catch (e: Exception) {
-            logger.warn("batch delete pet fail", e)
+            logger.warn("batch delete pet history fail", e)
             throw e
         }
     }
