@@ -55,7 +55,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @GetMapping("/pets/histories", name = "세이보그 유기동물 히스토리 목록 조회")
+    @GetMapping("/pet/histories", name = "세이보그 유기동물 히스토리 목록 조회")
     fun getPetHistories(
         @RequestParam("petIds") petIds: List<Long>?,
         @RequestParam("managerId") managerId: Long?,
@@ -139,15 +139,15 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @DeleteMapping("/pets", name = "세이보그 유기동물 일괄 삭제")
-    fun batchDeletePet(@RequestBody deleteParams: Map<String, Any>): ResultJson {
+    @DeleteMapping("/pet/histories", name = "세이보그 유기동물 히스토리 일괄 삭제")
+    fun batchDeletePetHistory(@RequestBody deleteParams: Map<String, Any>): ResultJson {
         return try {
-            ResultJson.withData(petService.batchDeletePet(deleteParams))
+            ResultJson.withData(petService.batchDeletePetHistory(deleteParams))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
                     ResultJson.Error(
-                        code = "batch delete pet fail",
+                        code = "batch delete pet histories fail",
                         message = e.message
                     )
                 )
