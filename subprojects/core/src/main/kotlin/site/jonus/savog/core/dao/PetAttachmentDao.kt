@@ -14,7 +14,7 @@ import site.jonus.savog.core.model.PetAttachments
 
 @Repository
 @Transactional
-class PetAttachmentDao: BaseDao() {
+class PetAttachmentDao : BaseDao() {
     fun findPetAttachmentByPetId(petId: Long): List<PetAttachment> {
         val query = PetAttachments
             .select { (PetAttachments.petId eq petId) and (PetAttachments.deleted eq 0) }
