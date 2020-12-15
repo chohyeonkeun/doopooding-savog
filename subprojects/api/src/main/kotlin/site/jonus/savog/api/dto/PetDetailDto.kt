@@ -9,6 +9,7 @@ data class PetDetailDto(
     val weight: Int,
     val adoptionStatus: String,
     val birthDate: String,
+    val comments: List<PetCommentDto>,
     val creatorId: String,
     val updaterId: String,
     val createdAt: Long,

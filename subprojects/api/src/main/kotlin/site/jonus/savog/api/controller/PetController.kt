@@ -123,7 +123,23 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @PutMapping("/pets", name = "세이보그 유기동물 수정")
+    @PostMapping("/pet/comments", name = "세이보그 유기동물 댓글 등록")
+    fun createPetComment(@RequestBody createParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(petService.createPetComment(createParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "create pet comment fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
+    @PutMapping("/pets", name = "세이보그 유기동 수정")
     fun updatePet(@RequestBody updateParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(petService.updatePet(updateParams))
@@ -132,6 +148,22 @@ class PetController(private val petService: PetService) : BaseController() {
                 errors = *arrayOf(
                     ResultJson.Error(
                         code = "update pet fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
+    @PutMapping("/pet/comments", name = "세이보그 유기동물 댓글 등록")
+    fun updatePetComment(@RequestBody updateParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(petService.updatePetComment(updateParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "update pet comment fail",
                         message = e.message
                     )
                 )
