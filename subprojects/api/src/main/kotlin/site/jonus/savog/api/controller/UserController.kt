@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/v1", name = "두푸딩 세이보그 회원")
+@RequestMapping("/v1", name = "세이보그 회원")
 class UserController(private val userService: UserService) : BaseController() {
     // 회원가입
     @PostMapping("/users/join")

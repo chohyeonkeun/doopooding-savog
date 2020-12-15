@@ -13,9 +13,9 @@ import site.jonus.savog.api.ResultJson
 import site.jonus.savog.api.service.PetService
 
 @RestController
-@RequestMapping("/v1", name = "두푸딩 세이보그 유기동물")
+@RequestMapping("/v1", name = "세이보그 유기 애완동물")
 class PetController(private val petService: PetService) : BaseController() {
-    @GetMapping("/pets", name = "세이보그 유기동물 목록 조회")
+    @GetMapping("/pets", name = "세이보그 유기 애완동물 목록 조회")
     fun getPets(
         @RequestParam("id") ids: List<Long>?,
         @RequestParam("type") type: String?,
@@ -55,7 +55,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @GetMapping("/pet/histories", name = "세이보그 유기동물 히스토리 목록 조회")
+    @GetMapping("/pet/histories", name = "세이보그 유기 애완동물 히스토리 목록 조회")
     fun getPetHistories(
         @RequestParam("petIds") petIds: List<Long>?,
         @RequestParam("managerId") managerId: Long?,
@@ -91,7 +91,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @GetMapping("/pets/{id}", name = "세이보그 유기동물 상세정보 조회")
+    @GetMapping("/pets/{id}", name = "세이보그 유기 애완동물 상세정보 조회")
     fun getPetById(@PathVariable id: Long): ResultJson {
         return try {
             ResultJson.withData(petService.getPetById(id))
@@ -107,7 +107,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @PostMapping("/pets", name = "세이보그 유기동물 등록")
+    @PostMapping("/pets", name = "세이보그 유기 애완동물 등록")
     fun createPet(@RequestBody createParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(petService.createPet(createParams))
@@ -123,7 +123,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @PostMapping("/pet/comments", name = "세이보그 유기동물 댓글 등록")
+    @PostMapping("/pet/comments", name = "세이보그 유기 애완동물 댓글 등록")
     fun createPetComment(@RequestBody createParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(petService.createPetComment(createParams))
@@ -139,7 +139,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @PutMapping("/pets", name = "세이보그 유기동 수정")
+    @PutMapping("/pets", name = "세이보그 유기 애완동물 수정")
     fun updatePet(@RequestBody updateParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(petService.updatePet(updateParams))
@@ -155,7 +155,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @PutMapping("/pet/comments", name = "세이보그 유기동물 댓글 등록")
+    @PutMapping("/pet/comments", name = "세이보그 유기 애완동물 댓글 등록")
     fun updatePetComment(@RequestBody updateParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(petService.updatePetComment(updateParams))
@@ -171,7 +171,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @DeleteMapping("/pet/histories", name = "세이보그 유기동물 히스토리 일괄 삭제")
+    @DeleteMapping("/pet/histories", name = "세이보그 유기 애완동물 히스토리 일괄 삭제")
     fun batchDeletePetHistory(@RequestBody deleteParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(petService.batchDeletePetHistory(deleteParams))
