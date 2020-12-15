@@ -2,11 +2,13 @@ package site.jonus.savog.api.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import site.jonus.savog.api.dto.PetCommentDto
 import site.jonus.savog.api.dto.PetDetailDto
 import site.jonus.savog.api.dto.PetHistoryListDto
 import site.jonus.savog.api.dto.PetListDto
 import site.jonus.savog.core.Constants
 import site.jonus.savog.core.dao.PetAttachmentDao
+import site.jonus.savog.core.dao.PetCommentDao
 import site.jonus.savog.core.dao.PetDao
 import site.jonus.savog.core.service.FileUploadService
 import java.time.Instant
@@ -15,6 +17,7 @@ import java.time.ZoneId
 @Service
 class PetService(
     private val petDao: PetDao,
+    private val petCommentDao: PetCommentDao,
     private val attachmentDao: PetAttachmentDao,
     private val fileUploadService: FileUploadService
 ) : BaseService() {
@@ -129,6 +132,21 @@ class PetService(
     fun getPetById(id: Long): PetDetailDto {
         try {
             val pet = petDao.findById(id)
+            val commentsCount = petCommentDao.countPetCommentsByPetId(id)
+            val comments = petCommentDao.findPetCommentsByPetId(id)
+            val commentListDto = comments.map { comment ->
+                PetCommentDto(
+                    total = commentsCount,
+                    commentId = comment?.id?.value,
+                    petId = comment?.petId,
+                    userId = comment?.userId,
+                    parentId = comment?.parentId,
+                    comment = comment?.comment,
+                    showOnTop = comment?.showOnTop?.let { it == 1 },
+                    createdAt = comment?.createdAt?.let { it.toEpochMilli() },
+                    updatedAt = comment?.updatedAt?.let { it.toEpochMilli() }
+                )
+            }
 
             return PetDetailDto(
                 id = pet.id.value,
@@ -139,6 +157,7 @@ class PetService(
                 weight = pet.weight,
                 adoptionStatus = pet.adoptionStatus,
                 birthDate = pet.birthDate.toString(),
+                comments = commentListDto,
                 creatorId = pet.creatorId,
                 updaterId = pet.updaterId,
                 createdAt = pet.createdAt.toEpochMilli(),
@@ -188,6 +207,27 @@ class PetService(
             return petId
         } catch (e: Exception) {
             logger.warn("create pet fail", e)
+            throw e
+        }
+    }
+
+    fun createPetComment(params: Map<String, Any>): Long {
+        val petId = params["petId"].toString().toLong()
+        val userId = params["userId"].toString().toLong()
+        val parentId = if (params.containsKey("parentId")) params["parentId"].toString().toLong() else null
+        val comment = params["comment"].toString()
+        val showOnTop = params["showOnTop"] as Boolean
+
+        try {
+            return petCommentDao.create(
+                petId = petId,
+                userId = userId,
+                parentId = parentId,
+                comment = comment,
+                showOnTop = showOnTop
+            )
+        } catch (e: Exception) {
+            logger.warn("create pet comment fail", e)
             throw e
         }
     }
@@ -259,6 +299,26 @@ class PetService(
             return true
         } catch (e: Exception) {
             logger.warn("update pet fail", e)
+            throw e
+        }
+    }
+
+    fun updatePetComment(params: Map<String, Any>): Boolean {
+        val commentId = params["commentId"].toString().toLong()
+        val comment = if (params.containsKey("comment")) params["comment"].toString() else null
+        val showOnTop = if (params.containsKey("showOnTop")) params["showOnTop"] as Boolean else null
+        val deleted = if (params.containsKey("deleted")) params["deleted"] as Boolean else null
+
+        try {
+            petCommentDao.update(
+                commentId = commentId,
+                comment = comment,
+                showOnTop = showOnTop,
+                deleted = deleted
+            )
+            return true
+        } catch (e: Exception) {
+            logger.warn("update pet comment fail", e)
             throw e
         }
     }

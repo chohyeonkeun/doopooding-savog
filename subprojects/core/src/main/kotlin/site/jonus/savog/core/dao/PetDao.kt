@@ -72,7 +72,8 @@ class PetDao : BaseDao() {
             birthStDate?.let { Pets.birthDate greaterEq it },
             birthEdDate?.let { Pets.birthDate lessEq it },
             creatorId?.let { Pets.creatorId eq it },
-            updaterId?.let { Pets.updaterId eq it }
+            updaterId?.let { Pets.updaterId eq it },
+            Pets.deleted eq 0
         )
         val query = conditions.let { if (it.count() > 0) Pets.select(it.compoundAnd()) else Pets.selectAll() }
 
@@ -104,7 +105,8 @@ class PetDao : BaseDao() {
             birthStDate?.let { Pets.birthDate greaterEq it },
             birthEdDate?.let { Pets.birthDate lessEq it },
             creatorId?.let { Pets.creatorId eq it },
-            updaterId?.let { Pets.updaterId eq it }
+            updaterId?.let { Pets.updaterId eq it },
+            Pets.deleted eq 0
         )
         val query = conditions.let { if (it.count() > 0) model.select(it.compoundAnd()) else model.selectAll() }
 
