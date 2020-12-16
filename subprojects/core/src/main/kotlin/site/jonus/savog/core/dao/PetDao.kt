@@ -242,4 +242,12 @@ class PetDao : BaseDao() {
             it[this.updaterId] = updaterId
         }
     }
+
+    fun findPetToMap(id: Long): Map<String, Any?>? {
+        return Pets
+            .select { Pets.id eq id }
+            .limit(1)
+            .map { rowToMap(it, Pets.columns, mapOf()) }
+            .firstOrNull()
+    }
 }
