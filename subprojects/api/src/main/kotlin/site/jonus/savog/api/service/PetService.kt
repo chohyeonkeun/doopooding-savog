@@ -6,11 +6,13 @@ import site.jonus.savog.api.dto.PetCommentDto
 import site.jonus.savog.api.dto.PetDetailDto
 import site.jonus.savog.api.dto.PetHistoryListDto
 import site.jonus.savog.api.dto.PetListDto
+import site.jonus.savog.core.Codes
 import site.jonus.savog.core.Constants
 import site.jonus.savog.core.dao.PetAttachmentDao
 import site.jonus.savog.core.dao.PetCommentDao
 import site.jonus.savog.core.dao.PetDao
 import site.jonus.savog.core.service.FileUploadService
+import site.jonus.savog.core.util.History
 import java.time.Instant
 import java.time.ZoneId
 
@@ -178,6 +180,7 @@ class PetService(
         val weight = params["weight"].toString().toInt()
         val adoptionStatus = params["adoptionStatus"].toString()
         val birthDate = Instant.ofEpochMilli(params["birthDate"].toString().toLong()).atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
+        val managerId = params["managerId"].toString().toLong()
         val creatorId = params["creatorId"].toString()
 
         try {
@@ -203,6 +206,15 @@ class PetService(
                     updaterId = creatorId
                 )
             }
+
+            petDao.createHistory(
+                petId = petId,
+                contentType = Codes.HistoryContentType.CHANGE_LOG.value,
+                categoryId = null,
+                content = "pet create - petId: $petId",
+                managerId = managerId,
+                creatorId = creatorId
+            )
 
             return petId
         } catch (e: Exception) {
@@ -244,7 +256,9 @@ class PetService(
         val adoptionStatus = params["adoptionStatus"]?.toString()
         val birthDate = params["birthDate"]?.let { Instant.ofEpochMilli(it.toString().toLong()).atZone(ZoneId.of("Asia/Seoul")).toLocalDate() }
         val deleted = params["deleted"]?.toString()?.toInt()
+        val managerId = params["managerId"].toString().toLong()
         val updaterId = params["updaterId"].toString()
+        val historyContents = mutableListOf<String>()
 
         try {
             petDao.update(
@@ -259,6 +273,29 @@ class PetService(
                 deleted = deleted,
                 updaterId = updaterId
             )
+
+            if (listOfNotNull(type, name, breeds, gender, weight, adoptionStatus, birthDate, deleted).count() > 0) {
+                val originMap = petDao.findPetToMap(petId)
+                val updateMap = mutableMapOf(
+                    "type" to type,
+                    "name" to name,
+                    "breeds" to breeds,
+                    "gender" to gender,
+                    "weight" to weight,
+                    "adoptionStatus" to adoptionStatus,
+                    "birthDate" to birthDate,
+                    "deleted" to deleted
+                )
+                historyContents.add(History.getContent(originMap, updateMap, "유기 애완동물 정보 변경"))
+
+                petDao.createHistory(
+                    petId = petId,
+                    contentType = Codes.HistoryContentType.CHANGE_LOG.value,
+                    content = historyContents.joinToString("\n"),
+                    managerId = managerId,
+                    creatorId = updaterId
+                )
+            }
 
             val prevAttachments = attachmentDao.findPetAttachmentByPetId(petId)
             attachments?.let {
