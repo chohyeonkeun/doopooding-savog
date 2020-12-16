@@ -21,4 +21,12 @@ object Codes {
             fun getByValue(value: String): UserRoleType? = values().find { it.value == value }
         }
     }
+
+    enum class HistoryContentType(val label: String, val value: String) {
+        CHANGE_LOG("변경이력", "HICTY_CHANGE_LOG");
+
+        companion object {
+            fun getByValue(value: String): HistoryContentType? = values().find { it.value == value }
+        }
+    }
 }
