@@ -6,13 +6,20 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.sql.Column
 import site.jonus.savog.core.exposed.toJavaInstant
+import site.jonus.savog.core.exposed.toJavaLocalDate
 import java.time.Instant
+import java.time.LocalDate
 
-object TreatmentHistories : LongIdTable("treatment_history", "id") {
+object PetTreatmentHistories : LongIdTable("pet_treatment_history", "id") {
     /**
      * 애완동물 ID
      */
     val petId: Column<Long> = long("pet_id")
+
+    /**
+     * 질병 ID
+     */
+    val petDiseaseId: Column<Long> = long("pet_disease_id")
 
     /**
      * 치료내용
@@ -22,7 +29,7 @@ object TreatmentHistories : LongIdTable("treatment_history", "id") {
     /**
      * 치료일자
      */
-    val treatmentDate: Column<Instant> = datetime("treatment_date").toJavaInstant()
+    val treatmentDate: Column<LocalDate> = date("treatment_date").toJavaLocalDate()
 
     /**
      * 생성자
@@ -50,23 +57,25 @@ object TreatmentHistories : LongIdTable("treatment_history", "id") {
     val updatedAt: Column<Instant> = datetime("updated_at").toJavaInstant()
 }
 
-class TreatmentHistory(id: EntityID<Long>) : LongEntity(id) {
-    var petId: Long by TreatmentHistories.petId
+class PetTreatmentHistory(id: EntityID<Long>) : LongEntity(id) {
+    var petId: Long by PetTreatmentHistories.petId
 
-    var contents: String by TreatmentHistories.contents
+    var petDiseaseId: Long by PetTreatmentHistories.petDiseaseId
 
-    var treatmentDate: Instant by TreatmentHistories.treatmentDate
+    var contents: String by PetTreatmentHistories.contents
 
-    var creatorId: String by TreatmentHistories.creatorId
+    var treatmentDate: LocalDate by PetTreatmentHistories.treatmentDate
 
-    var updaterId: String by TreatmentHistories.updaterId
+    var creatorId: String by PetTreatmentHistories.creatorId
 
-    var deleted: Int by TreatmentHistories.deleted
+    var updaterId: String by PetTreatmentHistories.updaterId
 
-    var createdAt: Instant by TreatmentHistories.createdAt
+    var deleted: Int by PetTreatmentHistories.deleted
 
-    var updaterdAt: Instant by TreatmentHistories.updatedAt
+    var createdAt: Instant by PetTreatmentHistories.createdAt
+
+    var updaterdAt: Instant by PetTreatmentHistories.updatedAt
 
     fun getId(): Long = this.id.value
-    companion object : LongEntityClass<TreatmentHistory>(TreatmentHistories)
+    companion object : LongEntityClass<PetTreatmentHistory>(PetTreatmentHistories)
 }

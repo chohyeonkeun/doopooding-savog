@@ -3,23 +3,34 @@ package site.jonus.savog.api.service
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import site.jonus.savog.api.dto.PetCommentDto
+import site.jonus.savog.api.dto.PetCommentInfo
 import site.jonus.savog.api.dto.PetDetailDto
-import site.jonus.savog.api.dto.PetHistoryListDto
-import site.jonus.savog.api.dto.PetListDto
+import site.jonus.savog.api.dto.PetDiseaseDto
+import site.jonus.savog.api.dto.PetDiseaseInfo
+import site.jonus.savog.api.dto.PetDto
+import site.jonus.savog.api.dto.PetHistory
+import site.jonus.savog.api.dto.PetHistoryDto
+import site.jonus.savog.api.dto.PetInfo
+import site.jonus.savog.api.dto.PetTreatmentHistoryDto
+import site.jonus.savog.api.dto.PetTreatmentHistoryInfo
 import site.jonus.savog.core.Codes
 import site.jonus.savog.core.Constants
 import site.jonus.savog.core.dao.PetAttachmentDao
 import site.jonus.savog.core.dao.PetCommentDao
 import site.jonus.savog.core.dao.PetDao
+import site.jonus.savog.core.dao.PetDiseaseDao
+import site.jonus.savog.core.dao.PetTreatmentHistoryDao
 import site.jonus.savog.core.service.FileUploadService
 import site.jonus.savog.core.util.History
+import site.jonus.savog.core.util.Times
 import java.time.Instant
-import java.time.ZoneId
 
 @Service
 class PetService(
     private val petDao: PetDao,
     private val petCommentDao: PetCommentDao,
+    private val petDiseaseDao: PetDiseaseDao,
+    private val petTreatmentHistoryDao: PetTreatmentHistoryDao,
     private val attachmentDao: PetAttachmentDao,
     private val fileUploadService: FileUploadService
 ) : BaseService() {
@@ -35,7 +46,7 @@ class PetService(
         birthEdDate: Long? = null,
         limit: Int?,
         offset: Int?
-    ): List<PetListDto> {
+    ): PetDto {
         try {
             val total = petDao.count(
                 ids = ids,
@@ -44,8 +55,8 @@ class PetService(
                 breeds = breeds,
                 gender = gender,
                 adoptionStatus = adoptionStatus,
-                birthStDate = birthStDate?.let { Instant.ofEpochMilli(it).atZone(ZoneId.of("Asia/Seoul")).toLocalDate() },
-                birthEdDate = birthEdDate?.let { Instant.ofEpochMilli(it).atZone(ZoneId.of("Asia/Seoul")).toLocalDate() }
+                birthStDate = birthStDate?.let { Instant.ofEpochMilli(it).atZone(Times.KST).toLocalDate() },
+                birthEdDate = birthEdDate?.let { Instant.ofEpochMilli(it).atZone(Times.KST).toLocalDate() }
             )
             val pets = petDao.search(
                 ids = ids,
@@ -54,24 +65,26 @@ class PetService(
                 breeds = breeds,
                 gender = gender,
                 adoptionStatus = adoptionStatus,
-                birthStDate = birthStDate?.let { Instant.ofEpochMilli(it).atZone(ZoneId.of("Asia/Seoul")).toLocalDate() },
-                birthEdDate = birthEdDate?.let { Instant.ofEpochMilli(it).atZone(ZoneId.of("Asia/Seoul")).toLocalDate() },
+                birthStDate = birthStDate?.let { Instant.ofEpochMilli(it).atZone(Times.KST).toLocalDate() },
+                birthEdDate = birthEdDate?.let { Instant.ofEpochMilli(it).atZone(Times.KST).toLocalDate() },
                 limit = limit?.let { it } ?: Constants.Paging.DEFAULT_LIMIT,
                 offset = offset?.let { it } ?: Constants.Paging.DEFAULT_OFFSET
             )
 
-            return pets.map {
-                PetListDto(
-                    total = total,
-                    id = it?.id?.value,
-                    type = it?.type,
-                    name = it?.name,
-                    breeds = it?.breeds,
-                    gender = it?.gender,
-                    adoptionStatus = it?.adoptionStatus,
-                    birthDate = it?.birthDate?.toString()
-                )
-            }
+            return PetDto(
+                total = total,
+                pets = pets.map {
+                    PetInfo(
+                        id = it.id.value,
+                        type = it.type,
+                        name = it.name,
+                        breeds = it.breeds,
+                        gender = it.gender,
+                        adoptionStatus = it.adoptionStatus,
+                        birthDate = it.birthDate.toString()
+                    )
+                }
+            )
         } catch (e: Exception) {
             logger.warn("get pets fail", e)
             throw e
@@ -87,7 +100,7 @@ class PetService(
         deleted: Int?,
         limit: Int?,
         offset: Int?
-    ): List<PetHistoryListDto> {
+    ): PetHistoryDto {
         try {
             val total = petDao.countHistories(
                 petIds = petIds,
@@ -107,24 +120,27 @@ class PetService(
                 limit = limit?.let { it } ?: Constants.Paging.DEFAULT_LIMIT,
                 offset = offset?.let { it } ?: Constants.Paging.DEFAULT_OFFSET
             )
-
-            return petHistories.map {
-                PetHistoryListDto(
-                    total = total,
-                    id = it["id"].toString().toLong(),
-                    petId = it["petId"].toString().toLong(),
-                    categoryId = it["categoryId"].toString().toLong(),
-                    managerId = it["managerId"].toString().toLong(),
-                    contentType = it["contentType"].toString(),
-                    content = it["content"].toString(),
-                    creatorId = it["creatorId"].toString(),
-                    updaterId = it["updaterId"].toString(),
-                    showOnTop = it["showOnTop"].toString().toInt() == 1,
-                    deleted = it["deleted"].toString().toInt() == 1,
-                    createdAt = (it["createdAt"] as Instant).toEpochMilli(),
-                    updatedAt = (it["updatedAt"] as Instant).toEpochMilli()
-                )
-            }
+            return PetHistoryDto(
+                total = total,
+                histories = petHistories.map {
+                    PetHistory(
+                        id = it["id"].toString().toLong(),
+                        petId = it["petId"].toString().toLong(),
+                        categoryId = it["categoryId"]?.toString()?.toLong(),
+                        categoryName = it["categoryName"]?.toString(),
+                        managerId = it["managerId"].toString().toLong(),
+                        managerName = it["managerName"].toString(),
+                        contentType = it["contentType"].toString(),
+                        content = it["content"]?.toString(),
+                        creatorId = it["creatorId"].toString(),
+                        updaterId = it["updaterId"].toString(),
+                        showOnTop = it["showOnTop"].toString().toInt() == 1,
+                        deleted = it["deleted"].toString().toInt() == 1,
+                        createdAt = (it["createdAt"] as Instant).toEpochMilli(),
+                        updatedAt = (it["updatedAt"] as Instant).toEpochMilli()
+                    )
+                }
+            )
         } catch (e: Exception) {
             logger.warn("get pet histories fail", e)
             throw e
@@ -134,21 +150,64 @@ class PetService(
     fun getPetById(id: Long): PetDetailDto {
         try {
             val pet = petDao.findById(id)
+
             val commentsCount = petCommentDao.countPetCommentsByPetId(id)
             val comments = petCommentDao.findPetCommentsByPetId(id)
-            val commentListDto = comments.map { comment ->
-                PetCommentDto(
-                    total = commentsCount,
-                    commentId = comment?.id?.value,
-                    petId = comment?.petId,
-                    userId = comment?.userId,
-                    parentId = comment?.parentId,
-                    comment = comment?.comment,
-                    showOnTop = comment?.showOnTop?.let { it == 1 },
-                    createdAt = comment?.createdAt?.let { it.toEpochMilli() },
-                    updatedAt = comment?.updatedAt?.let { it.toEpochMilli() }
-                )
-            }
+            val commentDto = PetCommentDto(
+                total = commentsCount,
+                comments = comments.mapNotNull { comment ->
+                    PetCommentInfo(
+                        commentId = comment.id.value,
+                        petId = comment.petId,
+                        userId = comment.userId,
+                        parentId = comment.parentId,
+                        comment = comment.comment,
+                        showOnTop = comment.showOnTop == 1,
+                        createdAt = comment.createdAt.toEpochMilli(),
+                        updatedAt = comment.updatedAt.toEpochMilli()
+                    )
+                }
+            )
+
+            val diseasesCount = petDiseaseDao.countPetDiseasesByPetId(id)
+            val diseases = petDiseaseDao.findPetDiseasesByPetId(id)
+            val diseaseDto = PetDiseaseDto(
+                total = diseasesCount,
+                diseases = diseases.mapNotNull { disease ->
+                    val diseaseId = disease.id.value
+                    val treatmentHistoriesByDiseaseId = petTreatmentHistoryDao.findPetTreatmentHistoriesByDiseaseId(diseaseId)
+                    PetDiseaseInfo(
+                        diseaseId,
+                        petId = disease.petId,
+                        name = disease.name,
+                        healed = disease.healed == 1,
+                        treatmentHistories = treatmentHistoriesByDiseaseId.map {
+                            PetTreatmentHistoryInfo(
+                                petId = it.petId,
+                                petDiseaseId = it.petDiseaseId,
+                                contents = it.contents,
+                                treatmentDate = it.treatmentDate.atStartOfDay(Times.KST).toInstant().toEpochMilli()
+
+                            )
+                        }
+                    )
+                }
+            )
+
+            val treatmentHistoriesCount = petTreatmentHistoryDao.countPetTreatmentHistoriesByPetId(id)
+            val treatmentHistories = petTreatmentHistoryDao.findPetTreatmentHistoriesByPetId(id)
+            val treatmentHistoryDto = PetTreatmentHistoryDto(
+                total = treatmentHistoriesCount,
+                treatmentHistories = treatmentHistories.mapNotNull { treatmentHistory ->
+                    PetTreatmentHistoryInfo(
+                        treatmentHistoryId = treatmentHistory.id.value,
+                        petId = treatmentHistory.petId,
+                        petDiseaseId = treatmentHistory.petDiseaseId,
+                        contents = treatmentHistory.contents,
+                        treatmentDate = treatmentHistory.treatmentDate.atStartOfDay(Times.KST).toInstant().toEpochMilli()
+                    )
+                }
+            )
 
             return PetDetailDto(
                 id = pet.id.value,
@@ -159,7 +218,9 @@ class PetService(
                 weight = pet.weight,
                 adoptionStatus = pet.adoptionStatus,
                 birthDate = pet.birthDate.toString(),
-                comments = commentListDto,
+                comments = commentDto,
+                diseases = diseaseDto,
+                treatmentHistories = treatmentHistoryDto,
                 creatorId = pet.creatorId,
                 updaterId = pet.updaterId,
                 createdAt = pet.createdAt.toEpochMilli(),
@@ -172,14 +233,14 @@ class PetService(
     }
 
     fun createPet(params: Map<String, Any>): Long {
-        val attachments = params["attachments"] as List<Map<String, Any>>
+        val attachments = params["attachments"]?.let { it as List<Map<String, Any>> }
         val type = params["type"].toString()
         val name = params["name"].toString()
         val breeds = params["breeds"].toString()
         val gender = params["gender"].toString()
         val weight = params["weight"].toString().toInt()
         val adoptionStatus = params["adoptionStatus"].toString()
-        val birthDate = Instant.ofEpochMilli(params["birthDate"].toString().toLong()).atZone(ZoneId.of("Asia/Seoul")).toLocalDate()
+        val birthDate = Instant.ofEpochMilli(params["birthDate"].toString().toLong()).atZone(Times.KST).toLocalDate()
         val managerId = params["managerId"].toString().toLong()
         val creatorId = params["creatorId"].toString()
 
@@ -195,7 +256,7 @@ class PetService(
                 creatorId = creatorId
             )
 
-            attachments.map { attachment ->
+            attachments?.map { attachment ->
                 val newObject = fileUploadService.preserve("pet-attachment", attachment["bucket"].toString(), attachment["key"].toString())
                 attachmentDao.upsertPetAttachment(
                     petId = petId,
@@ -254,26 +315,13 @@ class PetService(
         val gender = params["gender"]?.toString()
         val weight = params["weight"]?.toString()?.toInt()
         val adoptionStatus = params["adoptionStatus"]?.toString()
-        val birthDate = params["birthDate"]?.let { Instant.ofEpochMilli(it.toString().toLong()).atZone(ZoneId.of("Asia/Seoul")).toLocalDate() }
+        val birthDate = params["birthDate"]?.let { Instant.ofEpochMilli(it.toString().toLong()).atZone(Times.KST).toLocalDate() }
         val deleted = params["deleted"]?.toString()?.toInt()
         val managerId = params["managerId"].toString().toLong()
         val updaterId = params["updaterId"].toString()
         val historyContents = mutableListOf<String>()
 
         try {
-            petDao.update(
-                petId = petId,
-                type = type,
-                name = name,
-                breeds = breeds,
-                gender = gender,
-                weight = weight,
-                adoptionStatus = adoptionStatus,
-                birthDate = birthDate,
-                deleted = deleted,
-                updaterId = updaterId
-            )
-
             if (listOfNotNull(type, name, breeds, gender, weight, adoptionStatus, birthDate, deleted).count() > 0) {
                 val originMap = petDao.findPetToMap(petId)
                 val updateMap = mutableMapOf(
@@ -287,6 +335,19 @@ class PetService(
                     "deleted" to deleted
                 )
                 historyContents.add(History.getContent(originMap, updateMap, "유기 애완동물 정보 변경"))
+
+                petDao.update(
+                    petId = petId,
+                    type = type,
+                    name = name,
+                    breeds = breeds,
+                    gender = gender,
+                    weight = weight,
+                    adoptionStatus = adoptionStatus,
+                    birthDate = birthDate,
+                    deleted = deleted,
+                    updaterId = updaterId
+                )
 
                 petDao.createHistory(
                     petId = petId,

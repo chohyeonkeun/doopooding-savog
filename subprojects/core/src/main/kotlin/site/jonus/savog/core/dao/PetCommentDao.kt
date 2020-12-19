@@ -25,15 +25,16 @@ class PetCommentDao : BaseDao() {
         petId: Long,
         limit: Int = Constants.Paging.DEFAULT_LIMIT,
         offset: Int = Constants.Paging.DEFAULT_OFFSET
-    ): List<PetComment?> {
+    ): List<PetComment> {
         val query = PetComments
             .select { PetComments.petId eq petId }
             .andWhere { PetComments.deleted eq 0 }
         return query
-            .groupBy(PetComments.parentId)
             .limit(limit, offset)
             .orderBy(PetComments.createdAt to SortOrder.DESC)
-            .map { PetComment.wrapRow(it) }
+            .map {
+                PetComment.wrapRow(it)
+            }
     }
 
     fun create(
