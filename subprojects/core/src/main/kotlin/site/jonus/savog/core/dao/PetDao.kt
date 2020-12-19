@@ -93,7 +93,7 @@ class PetDao : BaseDao() {
         updaterId: String? = null,
         limit: Int = Constants.Paging.DEFAULT_LIMIT,
         offset: Int = Constants.Paging.DEFAULT_OFFSET
-    ): List<Pet?> {
+    ): List<Pet> {
         val model = Pets.slice(Pets.columns)
         val conditions = listOfNotNull(
             ids?.let { Pets.id inList it },

@@ -32,7 +32,7 @@ object PetHistories : LongIdTable("pet_history", "id") {
     /**
      * 변경내용
      */
-    val content: Column<String> = varchar("content", 45)
+    val content: Column<String> = text("content")
 
     /**
      * 생성자 ID
