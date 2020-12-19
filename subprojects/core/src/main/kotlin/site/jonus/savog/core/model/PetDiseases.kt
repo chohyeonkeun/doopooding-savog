@@ -6,7 +6,7 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.sql.Column
 
-object Diseases : LongIdTable("disease", "id") {
+object PetDiseases : LongIdTable("pet_disease", "id") {
     /**
      * 애완동물 ID
      */
@@ -38,19 +38,19 @@ object Diseases : LongIdTable("disease", "id") {
     val deleted: Column<Int> = integer("deleted").default(0)
 }
 
-class Disease(id: EntityID<Long>) : LongEntity(id) {
-    var petId: Long by Diseases.petId
+class PetDisease(id: EntityID<Long>) : LongEntity(id) {
+    var petId: Long by PetDiseases.petId
 
-    var name: String by Diseases.name
+    var name: String by PetDiseases.name
 
-    var healed: Int by Diseases.healed
+    var healed: Int by PetDiseases.healed
 
-    var creatorId: String by Diseases.creatorId
+    var creatorId: String by PetDiseases.creatorId
 
-    var updaterId: String by Diseases.updaterId
+    var updaterId: String by PetDiseases.updaterId
 
-    var deleted: Int by Diseases.deleted
+    var deleted: Int by PetDiseases.deleted
 
     fun getId(): Long = this.id.value
-    companion object : LongEntityClass<Disease>(Diseases)
+    companion object : LongEntityClass<PetDisease>(PetDiseases)
 }
