@@ -93,7 +93,7 @@ class PetDao : BaseDao() {
         updaterId: String? = null,
         limit: Int = Constants.Paging.DEFAULT_LIMIT,
         offset: Int = Constants.Paging.DEFAULT_OFFSET
-    ): List<Pet?> {
+    ): List<Pet> {
         val model = Pets.slice(Pets.columns)
         val conditions = listOfNotNull(
             ids?.let { Pets.id inList it },
@@ -241,5 +241,13 @@ class PetDao : BaseDao() {
             it[this.deleted] = 1
             it[this.updaterId] = updaterId
         }
+    }
+
+    fun findPetToMap(id: Long): Map<String, Any?>? {
+        return Pets
+            .select { Pets.id eq id }
+            .limit(1)
+            .map { rowToMap(it, Pets.columns, mapOf()) }
+            .firstOrNull()
     }
 }
