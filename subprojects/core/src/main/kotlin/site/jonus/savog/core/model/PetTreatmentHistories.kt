@@ -24,7 +24,7 @@ object PetTreatmentHistories : LongIdTable("pet_treatment_history", "id") {
     /**
      * 치료내용
      */
-    val contents: Column<String> = varchar("contents", 150)
+    val contents: Column<String> = text("contents")
 
     /**
      * 치료일자
