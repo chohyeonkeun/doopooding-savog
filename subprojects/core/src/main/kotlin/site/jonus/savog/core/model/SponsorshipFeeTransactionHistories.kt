@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.Column
 import site.jonus.savog.core.exposed.toJavaInstant
 import java.time.Instant
 
-object SponsorshipFeeHistories : LongIdTable("sponsorship_fee_history", "id") {
+object SponsorshipFeeTransactionHistories : LongIdTable("sponsorship_fee_transaction_history", "id") {
     /**
      * 후원금 ID
      */
@@ -60,27 +60,27 @@ object SponsorshipFeeHistories : LongIdTable("sponsorship_fee_history", "id") {
     val updatedAt: Column<Instant> = datetime("updated_at").toJavaInstant()
 }
 
-class SponsorshipFeeHistory(id: EntityID<Long>) : LongEntity(id) {
-    var sponsorshipFeeId: Long by SponsorshipFeeHistories.sponsorshipFeeId
+class SponsorshipFeeTransactionHistory(id: EntityID<Long>) : LongEntity(id) {
+    var sponsorshipFeeId: Long by SponsorshipFeeTransactionHistories.sponsorshipFeeId
 
-    var transactionType: String by SponsorshipFeeHistories.transactionType
+    var transactionType: String by SponsorshipFeeTransactionHistories.transactionType
 
-    var amount: Int by SponsorshipFeeHistories.amount
+    var amount: Int by SponsorshipFeeTransactionHistories.amount
 
-    var target: String by SponsorshipFeeHistories.target
+    var target: String by SponsorshipFeeTransactionHistories.target
 
-    var transactionDate: Instant by SponsorshipFeeHistories.transactionDate
+    var transactionDate: Instant by SponsorshipFeeTransactionHistories.transactionDate
 
-    var creatorId: String by SponsorshipFeeHistories.creatorId
+    var creatorId: String by SponsorshipFeeTransactionHistories.creatorId
 
-    var updaterId: String by SponsorshipFeeHistories.updaterId
+    var updaterId: String by SponsorshipFeeTransactionHistories.updaterId
 
-    var deleted: Int by SponsorshipFeeHistories.deleted
+    var deleted: Int by SponsorshipFeeTransactionHistories.deleted
 
-    var createdAt: Instant by SponsorshipFeeHistories.createdAt
+    var createdAt: Instant by SponsorshipFeeTransactionHistories.createdAt
 
-    var updatedAt: Instant by SponsorshipFeeHistories.updatedAt
+    var updatedAt: Instant by SponsorshipFeeTransactionHistories.updatedAt
 
     fun getId(): Long = this.id.value
-    companion object : LongEntityClass<SponsorshipFeeHistory>(SponsorshipFeeHistories)
+    companion object : LongEntityClass<SponsorshipFeeTransactionHistory>(SponsorshipFeeTransactionHistories)
 }

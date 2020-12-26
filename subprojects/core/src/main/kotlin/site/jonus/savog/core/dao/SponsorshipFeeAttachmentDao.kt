@@ -9,35 +9,35 @@ import org.jetbrains.exposed.sql.update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import site.jonus.savog.core.Constants
-import site.jonus.savog.core.model.PetAttachment
-import site.jonus.savog.core.model.PetAttachments
+import site.jonus.savog.core.model.SponsorshipFeeAttachment
+import site.jonus.savog.core.model.SponsorshipFeeAttachments
 
 @Repository
 @Transactional
-class PetAttachmentDao : BaseDao() {
-    fun findPetAttachmentByPetIds(petIds: List<Long>): List<PetAttachment> {
-        val query = PetAttachments
-            .select { PetAttachments.petId inList petIds }
-            .andWhere { PetAttachments.deleted eq 0 }
-            .orderBy(PetAttachments.id to SortOrder.DESC)
+class SponsorshipFeeAttachmentDao : BaseDao() {
+    fun findAttachmentsBySponsorshipFeeId(sponsorshipFeeIds: List<Long>): List<SponsorshipFeeAttachment> {
+        val query = SponsorshipFeeAttachments
+            .select { SponsorshipFeeAttachments.sponsorshipFeeId inList sponsorshipFeeIds }
+            .andWhere { SponsorshipFeeAttachments.deleted eq 0 }
+            .orderBy(SponsorshipFeeAttachments.id to SortOrder.DESC)
 
-        return PetAttachment.wrapRows(query).toList()
+        return SponsorshipFeeAttachment.wrapRows(query).toList()
     }
 
-    fun getPetAttachment(id: Long): PetAttachment? {
-        return PetAttachment[id]
+    fun getSponsorshipFeeAttachment(id: Long): SponsorshipFeeAttachment? {
+        return SponsorshipFeeAttachment[id]
     }
 
-    fun createPetAttachment(
-        petId: Long,
+    fun createSponsorshipFeeAttachment(
+        sponsorshipFeeId: Long,
         type: String,
         bucket: String? = null,
         key: String? = null,
         filename: String,
         creatorId: String = Constants.SYSTEM_USERNAME
     ): Long {
-        return PetAttachments.insertAndGetId {
-            it[this.petId] = petId
+        return SponsorshipFeeAttachments.insertAndGetId {
+            it[this.sponsorshipFeeId] = sponsorshipFeeId
             it[this.type] = type
             if (bucket != null) it[this.bucket] = bucket
             if (key != null) it[this.key] = key
@@ -47,20 +47,20 @@ class PetAttachmentDao : BaseDao() {
         }.value
     }
 
-    fun updatePetAttachment(
+    fun updateSponsorshipFeeAttachment(
         id: Long,
-        petId: Long,
+        sponsorshipFeeId: Long,
         type: String,
         bucket: String? = null,
         key: String? = null,
         filename: String,
         updaterId: String = Constants.SYSTEM_USERNAME
     ): Int {
-        return PetAttachments.update(
+        return SponsorshipFeeAttachments.update(
             {
                 listOfNotNull(
-                    PetAttachments.id eq id,
-                    PetAttachments.petId eq petId
+                    SponsorshipFeeAttachments.id eq id,
+                    SponsorshipFeeAttachments.sponsorshipFeeId eq sponsorshipFeeId
                 ).compoundAnd()
             },
             limit = 1
@@ -73,8 +73,8 @@ class PetAttachmentDao : BaseDao() {
         }
     }
 
-    fun upsertPetAttachment(
-        petId: Long,
+    fun upsertSponsorshipFeeAttachment(
+        sponsorshipFeeId: Long,
         type: String,
         bucket: String? = null,
         key: String? = null,
@@ -82,14 +82,14 @@ class PetAttachmentDao : BaseDao() {
         id: Long? = null,
         updaterId: String = Constants.SYSTEM_USERNAME
     ): Long {
-        return when (id?.let { getPetAttachment(it) }) {
-            null -> createPetAttachment(petId, type, bucket, key, filename, updaterId)
-            else -> updatePetAttachment(id, petId, type, bucket, key, filename, updaterId).toLong()
+        return when (id?.let { getSponsorshipFeeAttachment(it) }) {
+            null -> createSponsorshipFeeAttachment(sponsorshipFeeId, type, bucket, key, filename, updaterId)
+            else -> updateSponsorshipFeeAttachment(id, sponsorshipFeeId, type, bucket, key, filename, updaterId).toLong()
         }
     }
 
-    fun deletePetAttachment(ids: List<Long>, updaterId: String = Constants.SYSTEM_USERNAME): Int {
-        return PetAttachments.update({ (PetAttachments.id inList ids) }) {
+    fun deleteSponsorshipFeeAttachment(ids: List<Long>, updaterId: String = Constants.SYSTEM_USERNAME): Int {
+        return SponsorshipFeeAttachments.update({ (SponsorshipFeeAttachments.id inList ids) }) {
             it[this.deleted] = 1
             it[this.updaterId] = updaterId
         }
