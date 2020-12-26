@@ -49,7 +49,8 @@ class SponsorshipFeeTransactionHistoryDao : BaseDao() {
             target?.let { SponsorshipFeeTransactionHistories.target eq it },
             transactionStDate?.let { SponsorshipFeeTransactionHistories.transactionDate greaterEq it },
             transactionEdDate?.let { SponsorshipFeeTransactionHistories.transactionDate lessEq it },
-            creatorId?.let { SponsorshipFeeTransactionHistories.creatorId eq it }
+            creatorId?.let { SponsorshipFeeTransactionHistories.creatorId eq it },
+            SponsorshipFeeTransactionHistories.deleted eq 0
         )
         val query = if (conditions.count() > 0) SponsorshipFeeTransactionHistories.select(conditions.compoundAnd()) else SponsorshipFeeTransactionHistories.selectAll()
 

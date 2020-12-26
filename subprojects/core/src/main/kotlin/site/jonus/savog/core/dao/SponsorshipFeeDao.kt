@@ -46,7 +46,8 @@ class SponsorshipFeeDao : BaseDao() {
             ids?.let { SponsorshipFees.id inList it },
             petIds?.let { SponsorshipFees.petId inList it },
             status?.let { SponsorshipFees.status eq it },
-            creatorId?.let { SponsorshipFees.creatorId eq it }
+            creatorId?.let { SponsorshipFees.creatorId eq it },
+            SponsorshipFees.deleted eq 0
         )
         val query = conditions.let { if (it.count() > 0) Pets.select(it.compoundAnd()) else Pets.selectAll() }
 
