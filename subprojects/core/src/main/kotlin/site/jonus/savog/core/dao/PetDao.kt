@@ -27,29 +27,6 @@ import java.time.LocalDate
 @Repository
 @Transactional
 class PetDao : BaseDao() {
-    fun create(
-        type: String,
-        name: String,
-        breeds: String,
-        gender: String,
-        weight: Int,
-        adoptionStatus: String,
-        birthDate: LocalDate,
-        creatorId: String
-    ): Long {
-        return Pets.insertAndGetId { stmt ->
-            stmt[this.type] = type
-            stmt[this.name] = name
-            stmt[this.breeds] = breeds
-            stmt[this.gender] = gender
-            stmt[this.weight] = weight
-            stmt[this.adoptionStatus] = adoptionStatus
-            stmt[this.birthDate] = birthDate
-            stmt[this.creatorId] = creatorId
-            stmt[this.updaterId] = creatorId
-        }.value
-    }
-
     fun count(
         ids: List<Long>? = null,
         type: String? = null,
@@ -114,6 +91,29 @@ class PetDao : BaseDao() {
             .limit(limit, offset)
             .orderBy(Pets.id to SortOrder.DESC)
             .map { Pet.wrapRow(it) }
+    }
+
+    fun create(
+        type: String,
+        name: String,
+        breeds: String,
+        gender: String,
+        weight: Int,
+        adoptionStatus: String,
+        birthDate: LocalDate,
+        creatorId: String
+    ): Long {
+        return Pets.insertAndGetId { stmt ->
+            stmt[this.type] = type
+            stmt[this.name] = name
+            stmt[this.breeds] = breeds
+            stmt[this.gender] = gender
+            stmt[this.weight] = weight
+            stmt[this.adoptionStatus] = adoptionStatus
+            stmt[this.birthDate] = birthDate
+            stmt[this.creatorId] = creatorId
+            stmt[this.updaterId] = creatorId
+        }.value
     }
 
     fun update(
@@ -236,7 +236,10 @@ class PetDao : BaseDao() {
         }.value
     }
 
-    fun batchDeletePetHistory(targetIds: List<Long>, updaterId: String = Constants.SYSTEM_USERNAME): Int {
+    fun batchDeletePetHistory(
+        targetIds: List<Long>,
+        updaterId: String = Constants.SYSTEM_USERNAME
+    ): Int {
         return PetHistories.update({ PetHistories.id inList targetIds }) {
             it[this.deleted] = 1
             it[this.updaterId] = updaterId

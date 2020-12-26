@@ -1,7 +1,7 @@
 package site.jonus.savog.core.dao
 
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.compoundAnd
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
@@ -15,9 +15,10 @@ import site.jonus.savog.core.model.PetAttachments
 @Repository
 @Transactional
 class PetAttachmentDao : BaseDao() {
-    fun findPetAttachmentByPetId(petId: Long): List<PetAttachment> {
+    fun findPetAttachmentByPetIds(petIds: List<Long>): List<PetAttachment> {
         val query = PetAttachments
-            .select { (PetAttachments.petId eq petId) and (PetAttachments.deleted eq 0) }
+            .select { PetAttachments.petId inList petIds }
+            .andWhere { PetAttachments.deleted eq 0 }
             .orderBy(PetAttachments.id to SortOrder.DESC)
 
         return PetAttachment.wrapRows(query).toList()

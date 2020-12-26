@@ -398,7 +398,7 @@ class PetService(
                 )
             }
 
-            val prevAttachments = attachmentDao.findPetAttachmentByPetId(petId)
+            val prevAttachments = attachmentDao.findPetAttachmentByPetIds(listOf(petId))
             attachments?.let {
                 val attachmentIds = attachments?.mapNotNull { attachment ->
                     val attachmentId = attachment["attachmentId"]?.toString()?.toLong()
@@ -463,7 +463,7 @@ class PetService(
 
     fun updatePetDisease(params: Map<String, Any>): Boolean {
         val diseaseId = params["diseaseId"].toString().toLong()
-        val name = params["diseaseId"]?.toString()
+        val name = params["name"]?.toString()
         val healed = params["healed"]?.let { it as Boolean }
         val deleted = params["deleted"]?.let { it as Boolean }
         val updaterId = params["updaterId"].toString()
@@ -552,7 +552,6 @@ class PetService(
 
         try {
             petDao.batchDeletePetHistory(targetIds, updaterId)
-
             return true
         } catch (e: Exception) {
             logger.warn("batch delete pet history fail", e)
