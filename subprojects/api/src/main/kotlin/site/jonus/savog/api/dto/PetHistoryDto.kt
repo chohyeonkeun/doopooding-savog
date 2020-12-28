@@ -2,10 +2,10 @@ package site.jonus.savog.api.dto
 
 data class PetHistoryDto(
     val total: Int,
-    val histories: List<PetHistory>
+    val histories: List<PetHistoryInfo>
 )
 
-data class PetHistory(
+data class PetHistoryInfo(
     val id: Long,
     val petId: Long,
     val categoryId: Long? = null,
