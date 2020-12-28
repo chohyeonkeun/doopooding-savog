@@ -8,8 +8,8 @@ import site.jonus.savog.api.dto.PetDetailDto
 import site.jonus.savog.api.dto.PetDiseaseDto
 import site.jonus.savog.api.dto.PetDiseaseInfo
 import site.jonus.savog.api.dto.PetDto
-import site.jonus.savog.api.dto.PetHistory
 import site.jonus.savog.api.dto.PetHistoryDto
+import site.jonus.savog.api.dto.PetHistoryInfo
 import site.jonus.savog.api.dto.PetInfo
 import site.jonus.savog.api.dto.PetTreatmentHistoryDto
 import site.jonus.savog.api.dto.PetTreatmentHistoryInfo
@@ -70,18 +70,22 @@ class PetService(
                 limit = limit?.let { it } ?: Constants.Paging.DEFAULT_LIMIT,
                 offset = offset?.let { it } ?: Constants.Paging.DEFAULT_OFFSET
             )
+            val petAttachments = attachmentDao.findPetAttachmentByPetIds(pets.map { it.id.value }).groupBy { it.petId }
 
             return PetDto(
                 total = total,
-                pets = pets.map {
+                pets = pets.map { pet ->
                     PetInfo(
-                        id = it.id.value,
-                        type = it.type,
-                        name = it.name,
-                        breeds = it.breeds,
-                        gender = it.gender,
-                        adoptionStatus = it.adoptionStatus,
-                        birthDate = it.birthDate.toString()
+                        id = pet.id.value,
+                        type = pet.type,
+                        name = pet.name,
+                        breeds = pet.breeds,
+                        gender = pet.gender,
+                        adoptionStatus = pet.adoptionStatus,
+                        birthDate = pet.birthDate.toString(),
+                        urls = (petAttachments[pet.id.value] ?: error("")).map {
+                            fileUploadService.getSignedUrl(it.bucket, it.key, it.filename).toString()
+                        }
                     )
                 }
             )
@@ -123,7 +127,7 @@ class PetService(
             return PetHistoryDto(
                 total = total,
                 histories = petHistories.map {
-                    PetHistory(
+                    PetHistoryInfo(
                         id = it["id"].toString().toLong(),
                         petId = it["petId"].toString().toLong(),
                         categoryId = it["categoryId"]?.toString()?.toLong(),
@@ -271,7 +275,6 @@ class PetService(
             petDao.createHistory(
                 petId = petId,
                 contentType = Codes.HistoryContentType.CHANGE_LOG.value,
-                categoryId = null,
                 content = "pet create - petId: $petId",
                 managerId = managerId,
                 creatorId = creatorId
