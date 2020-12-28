@@ -10,7 +10,7 @@ data class SponsorshipFeeInfo(
     val petId: Long,
     val targetAmount: Int,
     val status: String,
-    val petAttachmentUrl: List<String>,
+    val petAttachmentUrls: List<String>,
     val creatorId: String,
     val updaterId: String,
     val createdAt: Long,

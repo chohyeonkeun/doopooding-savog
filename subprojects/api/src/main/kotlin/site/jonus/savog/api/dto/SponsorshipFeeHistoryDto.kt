@@ -1,13 +1,13 @@
 package site.jonus.savog.api.dto
 
-data class PetHistoryDto(
+data class SponsorshipFeeHistoryDto(
     val total: Int,
-    val histories: List<PetHistoryInfo>
+    val histories: List<SponsorshipFeeHistoryInfo>
 )
 
-data class PetHistoryInfo(
+data class SponsorshipFeeHistoryInfo(
     val id: Long,
-    val petId: Long,
+    val sponsorshipFeeId: Long,
     val categoryId: Long? = null,
     val categoryName: String? = null,
     val managerId: Long,

@@ -1,45 +1,132 @@
 package site.jonus.savog.api.controller
 
-import site.jonus.savog.api.ResultJson
-import site.jonus.savog.api.service.SponsorshipFeeService
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import site.jonus.savog.api.ResultJson
+import site.jonus.savog.api.service.SponsorshipFeeService
 
 @RestController
 @RequestMapping("/v1", name = "세이보그 후원금")
 class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFeeService) : BaseController() {
-    @GetMapping("/sponsorshipFees", name = "세이보그 유기 애완동물 후원금 전체 조회")
+    @GetMapping("/sponsorshipFees", name = "세이보그 후원금 전체 조회")
     fun getSponsorshipFees(
-        @RequestParam petIds: List<Long>?,
-        @RequestParam status: String?
+        @RequestParam("id") ids: List<Long>?,
+        @RequestParam("petId") petIds: List<Long>?,
+        @RequestParam("status") status: String?,
+        @RequestParam("creatorId") creatorId: String?,
+        @RequestParam("limit") limit: Int?,
+        @RequestParam("offset") offset: Int?
     ): ResultJson {
-        return ResultJson.withData(sponsorshipFeeService.getSponsorshipFees())
+        return try {
+            ResultJson.withData(
+                sponsorshipFeeService.getSponsorshipFees(
+                    ids = ids,
+                    petIds = petIds,
+                    status = status,
+                    creatorId = creatorId,
+                    limit = limit,
+                    offset = offset
+                )
+            )
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "get sponsorship fees fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
     }
 
-    @GetMapping("/sponsorshipFees/{petId}", name = "세이보그 유기 애완동물 후원금 조회")
-    fun getSponsorshipFeesByPetId(@PathVariable petId: Long): ResultJson {
-        return ResultJson.withData(sponsorshipFeeService.getSponsorshipFeesByPetId(petId))
+    @GetMapping("/sponsorshipFee/histories", name = "세이보그 후원금 히스토리 목록 조회")
+    fun getSponsorshipFeeHistories(
+        @RequestParam("sponsorshipFeeId") sponsorshipFeeIds: List<Long>?,
+        @RequestParam("managerId") managerId: Long?,
+        @RequestParam("contentType") contentType: String?,
+        @RequestParam("content") content: String?,
+        @RequestParam("showOnTop") showOnTop: Int?,
+        @RequestParam("deleted") deleted: Int?,
+        @RequestParam("limit") limit: Int?,
+        @RequestParam("offset") offset: Int?
+    ): ResultJson {
+        return try {
+            ResultJson.withData(
+                sponsorshipFeeService.getSponsorshipFeeHistories(
+                    sponsorshipFeeIds = sponsorshipFeeIds,
+                    managerId = managerId,
+                    contentType = contentType,
+                    content = content,
+                    showOnTop = showOnTop,
+                    deleted = deleted,
+                    limit = limit,
+                    offset = offset
+                )
+            )
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "get sponsorship fee histories fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
     }
 
-    @PostMapping("/sponsorshipFees", name = "세이보그 유기 애완동물 후원금 등록")
+    @PostMapping("/sponsorshipFees", name = "세이보그 후원금 등록")
     fun createSponsorshipFee(@RequestBody createParams: Map<String, Any>): Any {
-        return ResultJson.withData(sponsorshipFeeService.createSponsorshipFee(createParams))
+        return try {
+            ResultJson.withData(sponsorshipFeeService.createSponsorshipFee(createParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "create sponsorship fee fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
     }
 
-    @PutMapping("/sponsorshipFees", name = "세이보그 유기 애완동물 후원금 수정")
+    @PutMapping("/sponsorshipFees", name = "세이보그 후원금 수정")
     fun updateSponsorshipFee(@RequestBody updateParams: Map<String, Any>): Any {
-        return ResultJson.withData(sponsorshipFeeService.updateSponsorshipFee(updateParams))
+        return try {
+            ResultJson.withData(sponsorshipFeeService.updateSponsorshipFee(updateParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "update sponsorship fee fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
     }
 
-    @DeleteMapping("/sponsorshipFees", name = "세이보그 유기 애완동물 후원금 삭제")
+    @DeleteMapping("/sponsorshipFees", name = "세이보그 후원금 삭제")
     fun batchDeleteSponsorshipFee(@RequestBody deleteParams: Map<String, Any>): Any {
-        return ResultJson.withData(sponsorshipFeeService.deleteSponsorshipFee(deleteParams))
+        return try {
+            ResultJson.withData(sponsorshipFeeService.deleteSponsorshipFee(deleteParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "batch delete sponsorship fee fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
     }
 }
