@@ -57,7 +57,7 @@ class PetController(private val petService: PetService) : BaseController() {
 
     @GetMapping("/pet/histories", name = "세이보그 유기 애완동물 히스토리 목록 조회")
     fun getPetHistories(
-        @RequestParam("petIds") petIds: List<Long>?,
+        @RequestParam("petId") petIds: List<Long>?,
         @RequestParam("managerId") managerId: Long?,
         @RequestParam("contentType") contentType: String?,
         @RequestParam("content") content: String?,

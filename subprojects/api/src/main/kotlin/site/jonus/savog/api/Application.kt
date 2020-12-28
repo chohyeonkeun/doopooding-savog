@@ -1,8 +1,8 @@
 package site.jonus.savog.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import site.jonus.savog.client.login.SnsClientProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import site.jonus.savog.client.login.SnsClientProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
