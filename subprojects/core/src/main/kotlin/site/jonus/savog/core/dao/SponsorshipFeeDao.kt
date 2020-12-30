@@ -59,7 +59,7 @@ class SponsorshipFeeDao : BaseDao() {
         )
         val query = conditions.let { if (it.count() > 0) Pets.select(it.compoundAnd()) else Pets.selectAll() }
 
-        return SponsorshipFee.wrapRows(query).toList()
+        return SponsorshipFee.wrapRows(query.limit(limit, offset)).toList()
     }
 
     fun create(

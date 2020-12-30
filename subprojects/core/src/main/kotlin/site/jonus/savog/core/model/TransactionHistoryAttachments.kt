@@ -8,11 +8,11 @@ import org.jetbrains.exposed.sql.Column
 import site.jonus.savog.core.exposed.toJavaInstant
 import java.time.Instant
 
-object SponsorshipFeeAttachments : LongIdTable("sponsorship_fee_attachment", "id") {
+object TransactionHistoryAttachments : LongIdTable("transaction_history_attachment", "id") {
     /**
-     * 후원금 ID
+     * 후원금 내역 ID
      */
-    val sponsorshipFeeId: Column<Long> = long("sponsorship_fee_id")
+    val sponsorshipFeeTransactionHistoryId: Column<Long> = long("sponsorship_fee_transaction_history_id")
 
     /**
      * 첨부파일 유형
@@ -65,29 +65,29 @@ object SponsorshipFeeAttachments : LongIdTable("sponsorship_fee_attachment", "id
     val updatedAt: Column<Instant> = datetime("updated_at").toJavaInstant()
 }
 
-class SponsorshipFeeAttachment(id: EntityID<Long>) : LongEntity(id) {
-    var sponsorshipFeeId: Long by SponsorshipFeeAttachments.sponsorshipFeeId
+class TransactionHistoryAttachment(id: EntityID<Long>) : LongEntity(id) {
+    var sponsorshipFeeTransactionHistoryId: Long by TransactionHistoryAttachments.sponsorshipFeeTransactionHistoryId
 
-    var type: String by SponsorshipFeeAttachments.type
+    var type: String by TransactionHistoryAttachments.type
 
-    var bucket: String by SponsorshipFeeAttachments.bucket
+    var bucket: String by TransactionHistoryAttachments.bucket
 
-    var key: String by SponsorshipFeeAttachments.key
+    var key: String by TransactionHistoryAttachments.key
 
-    var filename: String by SponsorshipFeeAttachments.filename
+    var filename: String by TransactionHistoryAttachments.filename
 
-    var memo: String? by SponsorshipFeeAttachments.memo
+    var memo: String? by TransactionHistoryAttachments.memo
 
-    var creatorId: String by SponsorshipFeeAttachments.creatorId
+    var creatorId: String by TransactionHistoryAttachments.creatorId
 
-    var updaterId: String by SponsorshipFeeAttachments.updaterId
+    var updaterId: String by TransactionHistoryAttachments.updaterId
 
-    var deleted: Int by SponsorshipFeeAttachments.deleted
+    var deleted: Int by TransactionHistoryAttachments.deleted
 
-    var createdAt: Instant by SponsorshipFeeAttachments.createdAt
+    var createdAt: Instant by TransactionHistoryAttachments.createdAt
 
-    var updatedAt: Instant by SponsorshipFeeAttachments.updatedAt
+    var updatedAt: Instant by TransactionHistoryAttachments.updatedAt
 
     fun getId(): Long = this.id.value
-    companion object : LongEntityClass<SponsorshipFeeAttachment>(SponsorshipFeeAttachments)
+    companion object : LongEntityClass<TransactionHistoryAttachment>(TransactionHistoryAttachments)
 }
