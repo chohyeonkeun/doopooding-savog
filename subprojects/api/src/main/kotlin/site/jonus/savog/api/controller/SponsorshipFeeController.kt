@@ -82,8 +82,44 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
         }
     }
 
+    @GetMapping("/sponsorshipFee/transaction/histories", name = "세이보그 후원금 내역 조회")
+    fun getSponsorshipFeeTransactionHistories(
+        @RequestParam("sponsorshipFeeId") sponsorshipFeeIds: List<Long>?,
+        @RequestParam("transactionType") transactionType: String?,
+        @RequestParam("target") target: String?,
+        @RequestParam("transactionStDate") transactionStDate: Long?,
+        @RequestParam("transactionEdDate") transactionEdDate: Long?,
+        @RequestParam("creatorId") creatorId: String?,
+        @RequestParam("limit") limit: Int?,
+        @RequestParam("offset") offset: Int?
+    ): ResultJson {
+        return try {
+            ResultJson.withData(
+                sponsorshipFeeService.getTransactionHistories(
+                    sponsorshipFeeIds = sponsorshipFeeIds,
+                    transactionType = transactionType,
+                    target = target,
+                    transactionStDate = transactionStDate,
+                    transactionEdDate = transactionEdDate,
+                    creatorId = creatorId,
+                    limit = limit,
+                    offset = offset
+                )
+            )
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "get sponsorship fee transaction histories fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
     @PostMapping("/sponsorshipFees", name = "세이보그 후원금 등록")
-    fun createSponsorshipFee(@RequestBody createParams: Map<String, Any>): Any {
+    fun createSponsorshipFee(@RequestBody createParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(sponsorshipFeeService.createSponsorshipFee(createParams))
         } catch (e: Exception) {
@@ -98,8 +134,24 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
         }
     }
 
+    @PostMapping("/sponsorshipFee/transaction/histories", name = "세이보그 후원금 내역 등록")
+    fun createTransactionHistory(@RequestBody createParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(sponsorshipFeeService.createTransactionHistory(createParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "create sponsorship fee transaction history fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
     @PutMapping("/sponsorshipFees", name = "세이보그 후원금 수정")
-    fun updateSponsorshipFee(@RequestBody updateParams: Map<String, Any>): Any {
+    fun updateSponsorshipFee(@RequestBody updateParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(sponsorshipFeeService.updateSponsorshipFee(updateParams))
         } catch (e: Exception) {
@@ -114,8 +166,24 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
         }
     }
 
+    @PutMapping("/sponsorshipFee/transaction/histories", name = "세이보그 후원금 내역 수정")
+    fun updateTransactionHistory(@RequestBody updateParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(sponsorshipFeeService.updateTransactionHistory(updateParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "update sponsorship fee transaction history fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
     @DeleteMapping("/sponsorshipFees", name = "세이보그 후원금 삭제")
-    fun batchDeleteSponsorshipFee(@RequestBody deleteParams: Map<String, Any>): Any {
+    fun batchDeleteSponsorshipFee(@RequestBody deleteParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(sponsorshipFeeService.deleteSponsorshipFee(deleteParams))
         } catch (e: Exception) {

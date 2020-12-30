@@ -2,7 +2,9 @@ package site.jonus.savog.core.dao
 
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.lessEq
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.compoundAnd
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
@@ -13,12 +15,15 @@ import org.springframework.transaction.annotation.Transactional
 import site.jonus.savog.core.Constants
 import site.jonus.savog.core.model.SponsorshipFeeTransactionHistories
 import site.jonus.savog.core.model.SponsorshipFeeTransactionHistory
+import site.jonus.savog.core.model.TransactionHistoryAttachment
+import site.jonus.savog.core.model.TransactionHistoryAttachments
 import java.time.Instant
 
 @Repository
 @Transactional
 class SponsorshipFeeTransactionHistoryDao : BaseDao() {
-    fun countHistories(
+    fun count(
+        sponsorshipFeeIds: List<Long>? = null,
         transactionType: String? = null,
         target: String? = null,
         transactionStDate: Instant? = null,
@@ -26,6 +31,7 @@ class SponsorshipFeeTransactionHistoryDao : BaseDao() {
         creatorId: String? = null
     ): Int {
         val conditions = listOfNotNull(
+            sponsorshipFeeIds?.let { SponsorshipFeeTransactionHistories.sponsorshipFeeId inList it },
             transactionType?.let { SponsorshipFeeTransactionHistories.transactionType eq it },
             target?.let { SponsorshipFeeTransactionHistories.target eq it },
             transactionStDate?.let { SponsorshipFeeTransactionHistories.transactionDate greaterEq it },
@@ -37,14 +43,18 @@ class SponsorshipFeeTransactionHistoryDao : BaseDao() {
         return query.count()
     }
 
-    fun searchHistories(
+    fun search(
+        sponsorshipFeeIds: List<Long>? = null,
         transactionType: String? = null,
         target: String? = null,
         transactionStDate: Instant? = null,
         transactionEdDate: Instant? = null,
-        creatorId: String? = null
+        creatorId: String? = null,
+        limit: Int = Constants.Paging.DEFAULT_LIMIT,
+        offset: Int = Constants.Paging.DEFAULT_OFFSET
     ): List<SponsorshipFeeTransactionHistory> {
         val conditions = listOfNotNull(
+            sponsorshipFeeIds?.let { SponsorshipFeeTransactionHistories.sponsorshipFeeId inList it },
             transactionType?.let { SponsorshipFeeTransactionHistories.transactionType eq it },
             target?.let { SponsorshipFeeTransactionHistories.target eq it },
             transactionStDate?.let { SponsorshipFeeTransactionHistories.transactionDate greaterEq it },
@@ -54,17 +64,24 @@ class SponsorshipFeeTransactionHistoryDao : BaseDao() {
         )
         val query = if (conditions.count() > 0) SponsorshipFeeTransactionHistories.select(conditions.compoundAnd()) else SponsorshipFeeTransactionHistories.selectAll()
 
-        return SponsorshipFeeTransactionHistory.wrapRows(query).toList()
+        return SponsorshipFeeTransactionHistory.wrapRows(query.limit(limit, offset)).toList()
     }
 
-    fun createHistory(
+    fun findAttachmentsByIds(ids: List<Long>): List<TransactionHistoryAttachment> {
+        val query = TransactionHistoryAttachments
+            .select { TransactionHistoryAttachments.sponsorshipFeeTransactionHistoryId inList ids }
+            .andWhere { TransactionHistoryAttachments.deleted eq 0 }
+
+        return TransactionHistoryAttachment.wrapRows(query).toList()
+    }
+
+    fun create(
         sponsorshipFeeId: Long,
         transactionType: String,
         amount: Int,
         target: String,
         transactionDate: Instant,
-        creatorId: String,
-        updaterId: String
+        creatorId: String
     ): Long {
         return SponsorshipFeeTransactionHistories.insertAndGetId {
             it[this.sponsorshipFeeId] = sponsorshipFeeId
@@ -77,7 +94,7 @@ class SponsorshipFeeTransactionHistoryDao : BaseDao() {
         }.value
     }
 
-    fun updateHistory(
+    fun update(
         id: Long,
         transactionType: String? = null,
         amount: Int? = null,
@@ -96,7 +113,7 @@ class SponsorshipFeeTransactionHistoryDao : BaseDao() {
         }
     }
 
-    fun batchDeleteSponsorshipFeeTransactionHistory(targetIds: List<Long>, updaterId: String = Constants.SYSTEM_USERNAME): Int {
+    fun batchDelete(targetIds: List<Long>, updaterId: String = Constants.SYSTEM_USERNAME): Int {
         return SponsorshipFeeTransactionHistories.update({ SponsorshipFeeTransactionHistories.id inList targetIds }) {
             it[this.deleted] = 1
             it[this.updaterId] = updaterId
