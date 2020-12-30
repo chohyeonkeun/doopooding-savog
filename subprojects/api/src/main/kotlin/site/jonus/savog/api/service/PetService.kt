@@ -213,6 +213,8 @@ class PetService(
                 }
             )
 
+            val attachment = attachmentDao.findPetAttachmentByPetIds(listOf(id))
+
             return PetDetailDto(
                 id = pet.id.value,
                 type = pet.type,
@@ -225,6 +227,7 @@ class PetService(
                 comments = commentDto,
                 diseases = diseaseDto,
                 treatmentHistories = treatmentHistoryDto,
+                urls = attachment.map { fileUploadService.getSignedUrl(it.bucket, it.key, it.filename).toString() },
                 creatorId = pet.creatorId,
                 updaterId = pet.updaterId,
                 createdAt = pet.createdAt.toEpochMilli(),
