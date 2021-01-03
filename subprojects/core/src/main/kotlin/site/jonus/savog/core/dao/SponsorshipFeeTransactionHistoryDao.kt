@@ -1,5 +1,6 @@
 package site.jonus.savog.core.dao
 
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
@@ -64,7 +65,10 @@ class SponsorshipFeeTransactionHistoryDao : BaseDao() {
         )
         val query = if (conditions.count() > 0) SponsorshipFeeTransactionHistories.select(conditions.compoundAnd()) else SponsorshipFeeTransactionHistories.selectAll()
 
-        return SponsorshipFeeTransactionHistory.wrapRows(query.limit(limit, offset)).toList()
+        return query
+            .limit(limit, offset)
+            .orderBy(SponsorshipFeeTransactionHistories.id to SortOrder.DESC)
+            .map { SponsorshipFeeTransactionHistory.wrapRow(it) }
     }
 
     fun findAttachmentsByIds(ids: List<Long>): List<TransactionHistoryAttachment> {

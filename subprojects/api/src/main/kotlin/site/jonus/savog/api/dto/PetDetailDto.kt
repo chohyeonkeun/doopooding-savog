@@ -12,7 +12,7 @@ data class PetDetailDto(
     val comments: PetCommentDto,
     val diseases: PetDiseaseDto,
     val treatmentHistories: PetTreatmentHistoryDto,
-    val urls: List<String>,
+    val urls: List<String?>,
     val creatorId: String,
     val updaterId: String,
     val createdAt: Long,

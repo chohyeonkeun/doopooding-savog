@@ -70,7 +70,8 @@ class PetService(
                 limit = limit?.let { it } ?: Constants.Paging.DEFAULT_LIMIT,
                 offset = offset?.let { it } ?: Constants.Paging.DEFAULT_OFFSET
             )
-            val petAttachments = attachmentDao.findPetAttachmentByPetIds(pets.map { it.id.value }).groupBy { it.petId }
+            val petAttachments = attachmentDao.findPetAttachmentByPetIds(pets.map { it.id.value })
+            val petAttachmentsGroupbyId = if (petAttachments.isNotEmpty()) petAttachments.groupBy { it!!.petId } else null
 
             return PetDto(
                 total = total,
@@ -83,9 +84,11 @@ class PetService(
                         gender = pet.gender,
                         adoptionStatus = pet.adoptionStatus,
                         birthDate = pet.birthDate.toString(),
-                        urls = (petAttachments[pet.id.value] ?: error("")).map {
-                            fileUploadService.getSignedUrl(it.bucket, it.key, it.filename).toString()
-                        }
+                        urls = petAttachmentsGroupbyId?.let { attachments ->
+                            attachments[pet.id.value]?.map {
+                                fileUploadService.getSignedUrl(it!!.bucket, it.key, it.filename).toString()
+                            }
+                        } ?: listOf()
                     )
                 }
             )
@@ -227,7 +230,7 @@ class PetService(
                 comments = commentDto,
                 diseases = diseaseDto,
                 treatmentHistories = treatmentHistoryDto,
-                urls = attachment.map { fileUploadService.getSignedUrl(it.bucket, it.key, it.filename).toString() },
+                urls = if (attachment.isNotEmpty()) attachment.map { fileUploadService.getSignedUrl(it!!.bucket, it.key, it.filename).toString() } else listOf(),
                 creatorId = pet.creatorId,
                 updaterId = pet.updaterId,
                 createdAt = pet.createdAt.toEpochMilli(),
@@ -426,18 +429,18 @@ class PetService(
                 }
 
                 // 삭제 요청된 이전 첨부파일 삭제
-                val prevAttachmentIdsToDelete = prevAttachments?.mapNotNull {
-                    if (!attachmentIds.contains(it.id.value)) {
+                val prevAttachmentIdsToDelete = if (prevAttachments.isNotEmpty()) prevAttachments.mapNotNull {
+                    if (!attachmentIds.contains(it!!.id.value)) {
                         it.id.value
                     } else null
-                }
+                } else listOf()
                 if (prevAttachmentIdsToDelete.count() > 0) {
                     attachmentDao.deletePetAttachment(prevAttachmentIdsToDelete, updaterId = updaterId)
                 }
             }
 
             if (clearAttachments !== null && clearAttachments) {
-                attachmentDao.deletePetAttachment(prevAttachments.map { it.id.value }, updaterId = updaterId)
+                if (prevAttachments.isNotEmpty()) attachmentDao.deletePetAttachment(prevAttachments.map { it!!.id.value }, updaterId = updaterId)
             }
 
             return true

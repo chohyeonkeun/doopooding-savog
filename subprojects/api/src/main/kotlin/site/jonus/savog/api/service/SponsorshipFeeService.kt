@@ -52,7 +52,8 @@ class SponsorshipFeeService(
                 limit = limit?.let { it } ?: Constants.Paging.DEFAULT_LIMIT,
                 offset = offset?.let { it } ?: Constants.Paging.DEFAULT_OFFSET
             )
-            val petAttachments = petAttachmentDao.findPetAttachmentByPetIds(sponsorshipFees.map { it.petId }).groupBy { it.petId }
+            val petAttachments = petAttachmentDao.findPetAttachmentByPetIds(sponsorshipFees.map { it.petId })
+            val petAttachmentsGroupById = if (petAttachments.isNotEmpty()) petAttachments.groupBy { it!!.petId } else null
 
             return SponsorshipFeeDto(
                 total = total,
@@ -62,9 +63,11 @@ class SponsorshipFeeService(
                         petId = fee.petId,
                         targetAmount = fee.targetAmount,
                         status = fee.status,
-                        petAttachmentUrls = (petAttachments[fee.petId] ?: error("")).map {
-                            fileUploadService.getSignedUrl(it.bucket, it.key, it.filename).toString()
-                        },
+                        petAttachmentUrls = petAttachmentsGroupById?.let { attachments ->
+                            attachments[fee.petId]?.map {
+                                fileUploadService.getSignedUrl(it!!.bucket, it.key, it.filename).toString()
+                            }
+                        } ?: listOf(),
                         creatorId = fee.creatorId,
                         updaterId = fee.updaterId,
                         createdAt = fee.createdAt.toEpochMilli(),

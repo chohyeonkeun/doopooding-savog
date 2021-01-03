@@ -57,9 +57,12 @@ class SponsorshipFeeDao : BaseDao() {
             creatorId?.let { SponsorshipFees.creatorId eq it },
             SponsorshipFees.deleted eq 0
         )
-        val query = conditions.let { if (it.count() > 0) Pets.select(it.compoundAnd()) else Pets.selectAll() }
+        val query = conditions.let { if (it.count() > 0) SponsorshipFees.select(it.compoundAnd()) else SponsorshipFees.selectAll() }
 
-        return SponsorshipFee.wrapRows(query.limit(limit, offset)).toList()
+        return query
+            .limit(limit, offset)
+            .orderBy(SponsorshipFees.id to SortOrder.DESC)
+            .map { SponsorshipFee.wrapRow(it) }
     }
 
     fun create(
