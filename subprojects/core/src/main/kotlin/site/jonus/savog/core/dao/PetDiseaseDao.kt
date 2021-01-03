@@ -31,6 +31,14 @@ class PetDiseaseDao : BaseDao() {
             }
     }
 
+    fun findPetDiseaseToMap(id: Long): Map<String, Any?>? {
+        return PetDiseases
+            .select { PetDiseases.id eq id }
+            .limit(1)
+            .map { rowToMap(it, PetDiseases.columns, mapOf()) }
+            .firstOrNull()
+    }
+
     fun create(
         petId: Long,
         name: String,
@@ -47,13 +55,13 @@ class PetDiseaseDao : BaseDao() {
     }
 
     fun update(
-        id: Long,
+        diseaseId: Long,
         name: String? = null,
         healed: Boolean? = null,
         deleted: Boolean? = null,
         updaterId: String = Constants.SYSTEM_USERNAME
     ): Int {
-        return PetDiseases.update({ PetDiseases.id eq id }) { stmt ->
+        return PetDiseases.update({ PetDiseases.id eq diseaseId }) { stmt ->
             name?.let { stmt[this.name] = it }
             healed?.let { stmt[this.healed] = if (it) 1 else 0 }
             deleted?.let { stmt[this.deleted] = if (it) 1 else 0 }

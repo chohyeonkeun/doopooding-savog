@@ -15,37 +15,42 @@ object SponsorshipFeeHistories : LongIdTable("sponsorship_fee_history", "id") {
     val sponsorshipFeeId: Column<Long> = long("sponsorship_fee_id")
 
     /**
-     * 거래 종류 (입/출금)
+     * 카테고리 ID
      */
-    val transactionType: Column<String> = varchar("transaction_type", 30)
+    val categoryId: Column<Long?> = long("category_id").nullable()
 
     /**
-     * 거래금액
+     * 관리자 ID
      */
-    val amount: Column<Int> = integer("amount")
+    val managerId: Column<Long> = long("manager_id")
 
     /**
-     * 거래대상자
+     * 히스토리 유형
      */
-    val target: Column<String> = varchar("target", 45)
+    val contentType: Column<String> = varchar("content_type", 50)
 
     /**
-     * 거래일시
+     * 변경내용
      */
-    val transactionDate: Column<Instant> = datetime("transaction_date").toJavaInstant()
+    val content: Column<String> = text("content")
 
     /**
-     * 생성자
+     * 생성자 ID
      */
-    val creatorId: Column<String> = varchar("creator_id", 30)
+    val creatorId: Column<String> = varchar("creator_id", 32)
 
     /**
-     * 수정자
+     * 갱신자 ID
      */
-    val updaterId: Column<String> = varchar("updater_id", 30)
+    val updaterId: Column<String> = varchar("updater_id", 32)
 
     /**
-     * 삭제여부
+     * 공지 여부
+     */
+    val showOnTop: Column<Int> = integer("show_on_top").default(0)
+
+    /**
+     * 삭제 여부
      */
     val deleted: Column<Int> = integer("deleted").default(0)
 
@@ -55,7 +60,7 @@ object SponsorshipFeeHistories : LongIdTable("sponsorship_fee_history", "id") {
     val createdAt: Column<Instant> = datetime("created_at").toJavaInstant()
 
     /**
-     * 수정일
+     * 갱신일
      */
     val updatedAt: Column<Instant> = datetime("updated_at").toJavaInstant()
 }
@@ -63,17 +68,19 @@ object SponsorshipFeeHistories : LongIdTable("sponsorship_fee_history", "id") {
 class SponsorshipFeeHistory(id: EntityID<Long>) : LongEntity(id) {
     var sponsorshipFeeId: Long by SponsorshipFeeHistories.sponsorshipFeeId
 
-    var transactionType: String by SponsorshipFeeHistories.transactionType
+    var categoryId: Long? by SponsorshipFeeHistories.categoryId
 
-    var amount: Int by SponsorshipFeeHistories.amount
+    var managerId: Long by SponsorshipFeeHistories.managerId
 
-    var target: String by SponsorshipFeeHistories.target
+    var contentType: String by SponsorshipFeeHistories.contentType
 
-    var transactionDate: Instant by SponsorshipFeeHistories.transactionDate
+    var content: String by SponsorshipFeeHistories.content
 
     var creatorId: String by SponsorshipFeeHistories.creatorId
 
     var updaterId: String by SponsorshipFeeHistories.updaterId
+
+    var showOnTop: Int by SponsorshipFeeHistories.showOnTop
 
     var deleted: Int by SponsorshipFeeHistories.deleted
 

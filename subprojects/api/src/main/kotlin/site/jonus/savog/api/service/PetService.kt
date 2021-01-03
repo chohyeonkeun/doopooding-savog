@@ -8,8 +8,8 @@ import site.jonus.savog.api.dto.PetDetailDto
 import site.jonus.savog.api.dto.PetDiseaseDto
 import site.jonus.savog.api.dto.PetDiseaseInfo
 import site.jonus.savog.api.dto.PetDto
-import site.jonus.savog.api.dto.PetHistory
 import site.jonus.savog.api.dto.PetHistoryDto
+import site.jonus.savog.api.dto.PetHistoryInfo
 import site.jonus.savog.api.dto.PetInfo
 import site.jonus.savog.api.dto.PetTreatmentHistoryDto
 import site.jonus.savog.api.dto.PetTreatmentHistoryInfo
@@ -70,18 +70,25 @@ class PetService(
                 limit = limit?.let { it } ?: Constants.Paging.DEFAULT_LIMIT,
                 offset = offset?.let { it } ?: Constants.Paging.DEFAULT_OFFSET
             )
+            val petAttachments = attachmentDao.findPetAttachmentByPetIds(pets.map { it.id.value })
+            val petAttachmentsGroupbyId = if (petAttachments.isNotEmpty()) petAttachments.groupBy { it!!.petId } else null
 
             return PetDto(
                 total = total,
-                pets = pets.map {
+                pets = pets.map { pet ->
                     PetInfo(
-                        id = it.id.value,
-                        type = it.type,
-                        name = it.name,
-                        breeds = it.breeds,
-                        gender = it.gender,
-                        adoptionStatus = it.adoptionStatus,
-                        birthDate = it.birthDate.toString()
+                        id = pet.id.value,
+                        type = pet.type,
+                        name = pet.name,
+                        breeds = pet.breeds,
+                        gender = pet.gender,
+                        adoptionStatus = pet.adoptionStatus,
+                        birthDate = pet.birthDate.toString(),
+                        urls = petAttachmentsGroupbyId?.let { attachments ->
+                            attachments[pet.id.value]?.map {
+                                fileUploadService.getSignedUrl(it!!.bucket, it.key, it.filename).toString()
+                            }
+                        } ?: listOf()
                     )
                 }
             )
@@ -123,7 +130,7 @@ class PetService(
             return PetHistoryDto(
                 total = total,
                 histories = petHistories.map {
-                    PetHistory(
+                    PetHistoryInfo(
                         id = it["id"].toString().toLong(),
                         petId = it["petId"].toString().toLong(),
                         categoryId = it["categoryId"]?.toString()?.toLong(),
@@ -209,6 +216,8 @@ class PetService(
                 }
             )
 
+            val attachment = attachmentDao.findPetAttachmentByPetIds(listOf(id))
+
             return PetDetailDto(
                 id = pet.id.value,
                 type = pet.type,
@@ -221,6 +230,7 @@ class PetService(
                 comments = commentDto,
                 diseases = diseaseDto,
                 treatmentHistories = treatmentHistoryDto,
+                urls = if (attachment.isNotEmpty()) attachment.map { fileUploadService.getSignedUrl(it!!.bucket, it.key, it.filename).toString() } else listOf(),
                 creatorId = pet.creatorId,
                 updaterId = pet.updaterId,
                 createdAt = pet.createdAt.toEpochMilli(),
@@ -271,7 +281,6 @@ class PetService(
             petDao.createHistory(
                 petId = petId,
                 contentType = Codes.HistoryContentType.CHANGE_LOG.value,
-                categoryId = null,
                 content = "pet create - petId: $petId",
                 managerId = managerId,
                 creatorId = creatorId
@@ -305,6 +314,46 @@ class PetService(
         }
     }
 
+    fun createPetDisease(params: Map<String, Any>): Long {
+        val petId = params["petId"].toString().toLong()
+        val name = params["name"].toString()
+        val healed = params["healed"] as Boolean
+        val creatorId = params["creatorId"].toString()
+
+        try {
+            return petDiseaseDao.create(
+                petId = petId,
+                name = name,
+                healed = healed,
+                creatorId = creatorId
+            )
+        } catch (e: Exception) {
+            logger.warn("create pet disease fail", e)
+            throw e
+        }
+    }
+
+    fun createPetTreatmentHistory(params: Map<String, Any>): Long {
+        val petId = params["petId"].toString().toLong()
+        val petDiseaseId = if (params.containsKey("petDiseaseId")) params["petDiseaseId"].toString().toLong() else null
+        val contents = params["contents"].toString()
+        val treatmentDate = Instant.ofEpochMilli(params["treatmentDate"].toString().toLong()).atZone(Times.KST).toLocalDate()
+        val creatorId = params["creatorId"].toString()
+
+        try {
+            return petTreatmentHistoryDao.create(
+                petId = petId,
+                petDiseaseId = petDiseaseId,
+                contents = contents,
+                treatmentDate = treatmentDate,
+                creatorId = creatorId
+            )
+        } catch (e: Exception) {
+            logger.warn("create pet treatment history fail", e)
+            throw e
+        }
+    }
+
     fun updatePet(params: Map<String, Any>): Boolean {
         val petId = params["petId"].toString().toLong()
         val attachments = params["attachments"]?.let { it as List<Map<String, Any>> }
@@ -334,7 +383,7 @@ class PetService(
                     "birthDate" to birthDate,
                     "deleted" to deleted
                 )
-                historyContents.add(History.getContent(originMap, updateMap, "유기 애완동물 정보 변경"))
+                historyContents.add(History.getContent(originMap, updateMap, "애완동물 정보 변경"))
 
                 petDao.update(
                     petId = petId,
@@ -358,7 +407,7 @@ class PetService(
                 )
             }
 
-            val prevAttachments = attachmentDao.findPetAttachmentByPetId(petId)
+            val prevAttachments = attachmentDao.findPetAttachmentByPetIds(listOf(petId))
             attachments?.let {
                 val attachmentIds = attachments?.mapNotNull { attachment ->
                     val attachmentId = attachment["attachmentId"]?.toString()?.toLong()
@@ -380,18 +429,18 @@ class PetService(
                 }
 
                 // 삭제 요청된 이전 첨부파일 삭제
-                val prevAttachmentIdsToDelete = prevAttachments?.mapNotNull {
-                    if (!attachmentIds.contains(it.id.value)) {
+                val prevAttachmentIdsToDelete = if (prevAttachments.isNotEmpty()) prevAttachments.mapNotNull {
+                    if (!attachmentIds.contains(it!!.id.value)) {
                         it.id.value
                     } else null
-                }
+                } else listOf()
                 if (prevAttachmentIdsToDelete.count() > 0) {
                     attachmentDao.deletePetAttachment(prevAttachmentIdsToDelete, updaterId = updaterId)
                 }
             }
 
             if (clearAttachments !== null && clearAttachments) {
-                attachmentDao.deletePetAttachment(prevAttachments.map { it.id.value }, updaterId = updaterId)
+                if (prevAttachments.isNotEmpty()) attachmentDao.deletePetAttachment(prevAttachments.map { it!!.id.value }, updaterId = updaterId)
             }
 
             return true
@@ -421,6 +470,90 @@ class PetService(
         }
     }
 
+    fun updatePetDisease(params: Map<String, Any>): Boolean {
+        val diseaseId = params["diseaseId"].toString().toLong()
+        val name = params["name"]?.toString()
+        val healed = params["healed"]?.let { it as Boolean }
+        val deleted = params["deleted"]?.let { it as Boolean }
+        val updaterId = params["updaterId"].toString()
+        val managerId = params["managerId"].toString().toLong()
+        val historyContents = mutableListOf<String>()
+
+        try {
+            if (listOfNotNull(name, healed, deleted).count() > 0) {
+                val originMap = petDiseaseDao.findPetDiseaseToMap(diseaseId)
+                val updateMap = mutableMapOf(
+                    "name" to name,
+                    "healed" to healed,
+                    "deleted" to deleted
+                )
+                historyContents.add(History.getContent(originMap, updateMap, "애완동물 질병 정보 변경"))
+
+                petDiseaseDao.update(
+                    diseaseId = diseaseId,
+                    name = name,
+                    healed = healed,
+                    deleted = deleted,
+                    updaterId = updaterId
+                )
+
+                petDao.createHistory(
+                    petId = originMap?.get("petId").toString().toLong(),
+                    contentType = Codes.HistoryContentType.CHANGE_LOG.value,
+                    content = historyContents.joinToString("\n"),
+                    managerId = managerId,
+                    creatorId = updaterId
+                )
+            }
+            return true
+        } catch (e: Exception) {
+            logger.warn("update pet disease fail", e)
+            throw e
+        }
+    }
+
+    fun updatePetTreatmentHistory(params: Map<String, Any>): Boolean {
+        val treatmentHistoryId = params["treatmentHistoryId"].toString().toLong()
+        val contents = params["contents"]?.toString()
+        val treatmentDate = params["treatmentDate"]?.let { Instant.ofEpochMilli(it.toString().toLong()).atZone(Times.KST).toLocalDate() }
+        val deleted = params["deleted"]?.let { it as Boolean }
+        val updaterId = params["updaterId"].toString()
+        val managerId = params["managerId"].toString().toLong()
+        val historyContents = mutableListOf<String>()
+
+        try {
+            if (listOfNotNull(contents, treatmentDate, deleted).count() > 0) {
+                val originMap = petTreatmentHistoryDao.findPetTreatmentHistoryToMap(treatmentHistoryId)
+                val updateMap = mutableMapOf(
+                    "contents" to contents,
+                    "treatmentDate" to treatmentDate,
+                    "deleted" to deleted
+                )
+                historyContents.add(History.getContent(originMap, updateMap, "애완동물 치료내역 변경"))
+
+                petTreatmentHistoryDao.update(
+                    treatmentHistoryId = treatmentHistoryId,
+                    contents = contents,
+                    treatmentDate = treatmentDate,
+                    deleted = deleted,
+                    updaterId = updaterId
+                )
+
+                petDao.createHistory(
+                    petId = originMap?.get("petId").toString().toLong(),
+                    contentType = Codes.HistoryContentType.CHANGE_LOG.value,
+                    content = historyContents.joinToString("\n"),
+                    managerId = managerId,
+                    creatorId = updaterId
+                )
+            }
+            return true
+        } catch (e: Exception) {
+            logger.warn("update pet treatment history fail", e)
+            throw e
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun batchDeletePetHistory(deleteParams: Map<String, Any>): Boolean {
         val targetIds = deleteParams["targetIds"] as List<Long>
@@ -428,7 +561,6 @@ class PetService(
 
         try {
             petDao.batchDeletePetHistory(targetIds, updaterId)
-
             return true
         } catch (e: Exception) {
             logger.warn("batch delete pet history fail", e)

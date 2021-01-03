@@ -12,5 +12,6 @@ data class PetInfo(
     val breeds: String,
     val gender: String,
     val adoptionStatus: String,
-    val birthDate: String
+    val birthDate: String,
+    val urls: List<String?>
 )

@@ -27,29 +27,6 @@ import java.time.LocalDate
 @Repository
 @Transactional
 class PetDao : BaseDao() {
-    fun create(
-        type: String,
-        name: String,
-        breeds: String,
-        gender: String,
-        weight: Int,
-        adoptionStatus: String,
-        birthDate: LocalDate,
-        creatorId: String
-    ): Long {
-        return Pets.insertAndGetId { stmt ->
-            stmt[this.type] = type
-            stmt[this.name] = name
-            stmt[this.breeds] = breeds
-            stmt[this.gender] = gender
-            stmt[this.weight] = weight
-            stmt[this.adoptionStatus] = adoptionStatus
-            stmt[this.birthDate] = birthDate
-            stmt[this.creatorId] = creatorId
-            stmt[this.updaterId] = creatorId
-        }.value
-    }
-
     fun count(
         ids: List<Long>? = null,
         type: String? = null,
@@ -116,6 +93,29 @@ class PetDao : BaseDao() {
             .map { Pet.wrapRow(it) }
     }
 
+    fun create(
+        type: String,
+        name: String,
+        breeds: String,
+        gender: String,
+        weight: Int,
+        adoptionStatus: String,
+        birthDate: LocalDate,
+        creatorId: String
+    ): Long {
+        return Pets.insertAndGetId { stmt ->
+            stmt[this.type] = type
+            stmt[this.name] = name
+            stmt[this.breeds] = breeds
+            stmt[this.gender] = gender
+            stmt[this.weight] = weight
+            stmt[this.adoptionStatus] = adoptionStatus
+            stmt[this.birthDate] = birthDate
+            stmt[this.creatorId] = creatorId
+            stmt[this.updaterId] = creatorId
+        }.value
+    }
+
     fun update(
         petId: Long,
         type: String? = null,
@@ -145,6 +145,14 @@ class PetDao : BaseDao() {
         return Pet[id]
     }
 
+    fun findPetToMap(id: Long): Map<String, Any?>? {
+        return Pets
+            .select { Pets.id eq id }
+            .limit(1)
+            .map { rowToMap(it, Pets.columns, mapOf()) }
+            .firstOrNull()
+    }
+
     fun countHistories(
         petIds: List<Long>? = null,
         managerId: Long? = null,
@@ -166,6 +174,7 @@ class PetDao : BaseDao() {
             deleted?.let { PetHistories.deleted eq it }
         )
         val query = conditions.let { if (it.count() > 0) model.select(it.compoundAnd()) else model.selectAll() }
+
         return query.count()
     }
 
@@ -236,18 +245,13 @@ class PetDao : BaseDao() {
         }.value
     }
 
-    fun batchDeletePetHistory(targetIds: List<Long>, updaterId: String = Constants.SYSTEM_USERNAME): Int {
+    fun batchDeletePetHistory(
+        targetIds: List<Long>,
+        updaterId: String = Constants.SYSTEM_USERNAME
+    ): Int {
         return PetHistories.update({ PetHistories.id inList targetIds }) {
             it[this.deleted] = 1
             it[this.updaterId] = updaterId
         }
-    }
-
-    fun findPetToMap(id: Long): Map<String, Any?>? {
-        return Pets
-            .select { Pets.id eq id }
-            .limit(1)
-            .map { rowToMap(it, Pets.columns, mapOf()) }
-            .firstOrNull()
     }
 }

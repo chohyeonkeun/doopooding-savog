@@ -57,7 +57,7 @@ class PetController(private val petService: PetService) : BaseController() {
 
     @GetMapping("/pet/histories", name = "세이보그 유기 애완동물 히스토리 목록 조회")
     fun getPetHistories(
-        @RequestParam("petIds") petIds: List<Long>?,
+        @RequestParam("petId") petIds: List<Long>?,
         @RequestParam("managerId") managerId: Long?,
         @RequestParam("contentType") contentType: String?,
         @RequestParam("content") content: String?,
@@ -139,6 +139,38 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
+    @PostMapping("/pet/diseases", name = "세이보그 유기 애완동물 질병 등록")
+    fun createPetDisease(@RequestBody createParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(petService.createPetDisease(createParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "create pet disease fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
+    @PostMapping("/pet/treatmentHistories", name = "세이보그 유기 애완동물 치료내역 등록")
+    fun createPetTreatmentHistory(@RequestBody createParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(petService.createPetTreatmentHistory(createParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "create pet treatment history fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
     @PutMapping("/pets", name = "세이보그 유기 애완동물 수정")
     fun updatePet(@RequestBody updateParams: Map<String, Any>): ResultJson {
         return try {
@@ -155,7 +187,7 @@ class PetController(private val petService: PetService) : BaseController() {
         }
     }
 
-    @PutMapping("/pet/comments", name = "세이보그 유기 애완동물 댓글 등록")
+    @PutMapping("/pet/comments", name = "세이보그 유기 애완동물 댓글 수정")
     fun updatePetComment(@RequestBody updateParams: Map<String, Any>): ResultJson {
         return try {
             ResultJson.withData(petService.updatePetComment(updateParams))
@@ -164,6 +196,38 @@ class PetController(private val petService: PetService) : BaseController() {
                 errors = *arrayOf(
                     ResultJson.Error(
                         code = "update pet comment fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
+    @PutMapping("/pet/diseases", name = "세이보그 유기 애완동물 질병 수정")
+    fun updatePetDisease(@RequestBody updateParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(petService.updatePetDisease(updateParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "update pet disease fail",
+                        message = e.message
+                    )
+                )
+            )
+        }
+    }
+
+    @PutMapping("/pet/treatmentHistories", name = "세이보그 유기 애완동물 치료내역 수정")
+    fun updatePetTreatmentHistory(@RequestBody updateParams: Map<String, Any>): ResultJson {
+        return try {
+            ResultJson.withData(petService.updatePetTreatmentHistory(updateParams))
+        } catch (e: Exception) {
+            ResultJson.withError(
+                errors = *arrayOf(
+                    ResultJson.Error(
+                        code = "update pet treatment history fail",
                         message = e.message
                     )
                 )
