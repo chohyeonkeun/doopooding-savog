@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -119,9 +120,16 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
     }
 
     @PostMapping("/sponsorshipFees", name = "세이보그 후원금 등록")
-    fun createSponsorshipFee(@RequestBody createParams: Map<String, Any>): ResultJson {
+    fun createSponsorshipFee(
+        @RequestBody createParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = createParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(sponsorshipFeeService.createSponsorshipFee(createParams))
+            ResultJson.withData(sponsorshipFeeService.createSponsorshipFee(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -135,9 +143,16 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
     }
 
     @PostMapping("/sponsorshipFee/transaction/histories", name = "세이보그 후원금 내역 등록")
-    fun createTransactionHistory(@RequestBody createParams: Map<String, Any>): ResultJson {
+    fun createTransactionHistory(
+        @RequestBody createParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = createParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(sponsorshipFeeService.createTransactionHistory(createParams))
+            ResultJson.withData(sponsorshipFeeService.createTransactionHistory(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -151,9 +166,16 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
     }
 
     @PutMapping("/sponsorshipFees", name = "세이보그 후원금 수정")
-    fun updateSponsorshipFee(@RequestBody updateParams: Map<String, Any>): ResultJson {
+    fun updateSponsorshipFee(
+        @RequestBody updateParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = updateParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(sponsorshipFeeService.updateSponsorshipFee(updateParams))
+            ResultJson.withData(sponsorshipFeeService.updateSponsorshipFee(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -167,9 +189,16 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
     }
 
     @PutMapping("/sponsorshipFee/transaction/histories", name = "세이보그 후원금 내역 수정")
-    fun updateTransactionHistory(@RequestBody updateParams: Map<String, Any>): ResultJson {
+    fun updateTransactionHistory(
+        @RequestBody updateParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = updateParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(sponsorshipFeeService.updateTransactionHistory(updateParams))
+            ResultJson.withData(sponsorshipFeeService.updateTransactionHistory(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -183,9 +212,16 @@ class SponsorshipFeeController(private val sponsorshipFeeService: SponsorshipFee
     }
 
     @DeleteMapping("/sponsorshipFees", name = "세이보그 후원금 삭제")
-    fun batchDeleteSponsorshipFee(@RequestBody deleteParams: Map<String, Any>): ResultJson {
+    fun batchDeleteSponsorshipFee(
+        @RequestBody deleteParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = deleteParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(sponsorshipFeeService.deleteSponsorshipFee(deleteParams))
+            ResultJson.withData(sponsorshipFeeService.deleteSponsorshipFee(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
