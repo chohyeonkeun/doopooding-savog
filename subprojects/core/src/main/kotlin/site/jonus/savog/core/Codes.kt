@@ -13,7 +13,7 @@ object Codes {
     enum class UserRoleType(val label: String, val value: String) {
         MASTER("마스터", "UROTP_MASTER"),
 
-        ADMIN("관리자", "UROTP_ADMIN"),
+        OPERATOR("운영자", "UROTP_OPERATOR"),
 
         GENERAL("일반회원", "UROTP_GENERAL");
 

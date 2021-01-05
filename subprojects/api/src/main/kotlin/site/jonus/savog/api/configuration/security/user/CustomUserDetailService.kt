@@ -12,9 +12,8 @@ class CustomUserDetailService(private val userDao: UserDao) : UserDetailsService
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userDao.findByEmail(username)
-        return if (user !== null) ConvertToUserDetails(
-            user,
-            userDao
-        ) else throw UsernameNotFoundException("사용자를 찾을 수 없습니다.")
+        return if (user !== null) {
+            ConvertToUserDetails(user, userDao)
+        } else throw UsernameNotFoundException("사용자를 찾을 수 없습니다.")
     }
 }
