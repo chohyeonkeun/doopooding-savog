@@ -1,11 +1,11 @@
 package site.jonus.savog.api.controller
 
-import site.jonus.savog.api.ResultJson
-import site.jonus.savog.api.service.UserService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import site.jonus.savog.api.ResultJson
+import site.jonus.savog.api.service.UserService
 
 @RestController
 @RequestMapping("/v1", name = "세이보그 회원")

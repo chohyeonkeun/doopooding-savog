@@ -1,11 +1,10 @@
 package site.jonus.savog.api.configuration.security
 
-import site.jonus.savog.core.dao.UserDao
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import site.jonus.savog.core.dao.UserDao
 import site.jonus.savog.core.model.User
-import java.util.stream.Collectors
 
 class ConvertToUserDetails(
     private val user: User,
@@ -13,7 +12,9 @@ class ConvertToUserDetails(
 ) : UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority>? {
         val roles = userDao.findRolesByEmail(user.email)?.map { it.role }
-        return roles?.stream()?.map { SimpleGrantedAuthority(it) }?.collect(Collectors.toList())
+        val auth: MutableList<GrantedAuthority> = mutableListOf()
+        roles?.forEach { auth.add(SimpleGrantedAuthority(it)) }
+        return auth
     }
 
     override fun isEnabled(): Boolean {
