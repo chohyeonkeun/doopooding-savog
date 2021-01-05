@@ -11,11 +11,11 @@ object Codes {
         }
     }
     enum class UserRoleType(val label: String, val value: String) {
-        MASTER("마스터", "UROTP_MASTER"),
+        ADMIN("관리자", "ROLE_ADMIN"),
 
-        OPERATOR("운영자", "UROTP_OPERATOR"),
+        MANAGER("운영자", "ROLE_MANAGER"),
 
-        GENERAL("일반회원", "UROTP_GENERAL");
+        USER("일반회원", "ROLE_USER");
 
         companion object {
             fun getByValue(value: String): UserRoleType? = values().find { it.value == value }
