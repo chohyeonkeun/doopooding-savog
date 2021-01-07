@@ -65,7 +65,7 @@ module.exports = {
     moment: {
       locales: ['ko_kr']
     }
-  }
+  },
   // sample
   // lintOnSave: process.env.NODE_ENV === 'development',
   // publicPath: '/',
@@ -90,4 +90,12 @@ module.exports = {
   //     }
   //   }
   // }
+
+  css: {
+    loaderOptions: {
+      css: {
+        sourceMap: process.env.NODE_ENV !== "production" ? true : false
+      }
+    }
+  }
 };
