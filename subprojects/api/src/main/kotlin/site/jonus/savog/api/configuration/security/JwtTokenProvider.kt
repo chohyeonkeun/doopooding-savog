@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
@@ -18,7 +19,8 @@ import javax.servlet.http.HttpServletRequest
 @Component
 class JwtTokenProvider(@Qualifier("customUserDetailService") private val userDetailsService: UserDetailsService) {
 
-    private var secretKey = "savog"
+    @Value("spring.jwt.secret")
+    lateinit var secretKey: String
 
     // 토큰 유효시간 12시간
     private val tokenValidTime = 12 * 60 * 60 * 1000L

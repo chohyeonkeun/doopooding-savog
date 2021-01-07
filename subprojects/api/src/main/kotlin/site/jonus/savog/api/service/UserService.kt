@@ -23,7 +23,7 @@ class UserService(
             val email = joinParams["email"].toString()
             val password = passwordEncoder.encode(joinParams["password"].toString())
             val nickname = joinParams["nickname"].toString()
-            val roles = if (joinParams["roles"] != null) joinParams["roles"] as List<String> else listOf(Codes.UserRoleType.GENERAL.value)
+            val roles = if (joinParams["roles"] != null) joinParams["roles"] as List<String> else listOf(Codes.UserRoleType.USER.value)
             val loginType = joinParams["loginType"].toString()
 
             if (userDao.findByEmail(email) != null) {
@@ -62,7 +62,7 @@ class UserService(
                 // 네이버 아이디로 로그인한 경우
                 name = loginParams["name"].toString()
                 email = loginParams["email"].toString()
-                roles = listOf(Codes.UserRoleType.GENERAL.value)
+                roles = listOf(Codes.UserRoleType.USER.value)
                 authToken = jwtTokenProvider.createToken(email, roles)
                 nickname = loginParams["nickname"].toString()
                 val user = userDao.findByEmail(email)

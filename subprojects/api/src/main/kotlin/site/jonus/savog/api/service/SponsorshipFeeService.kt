@@ -201,23 +201,23 @@ class SponsorshipFeeService(
         val petId = params["petId"].toString().toLong()
         val targetAmount = params["targetAmount"].toString().toInt()
         val status = params["status"].toString()
-        val managerId = params["managerId"].toString().toLong()
-        val creatorId = params["creatorId"].toString()
+        val requesterId = params["requesterId"].toString().toLong()
+        val requesterUsername = params["requesterUsername"].toString()
 
         try {
             val sponsorshipFeeId = sponsorshipFeeDao.create(
                 petId = petId,
                 targetAmount = targetAmount,
                 status = status,
-                creatorId = creatorId
+                creatorId = requesterUsername
             )
 
             sponsorshipFeeDao.createHistory(
                 sponsorshipFeeId = sponsorshipFeeId,
                 contentType = Codes.HistoryContentType.CHANGE_LOG.value,
                 content = "sponsorship fee create - sponsorshipFeeId: $sponsorshipFeeId",
-                managerId = managerId,
-                creatorId = creatorId
+                managerId = requesterId,
+                creatorId = requesterUsername
             )
 
             return sponsorshipFeeId
@@ -235,7 +235,7 @@ class SponsorshipFeeService(
         val amount = params["amount"].toString().toInt()
         val target = params["target"].toString()
         val transactionDate = Instant.ofEpochMilli(params["transactionDate"].toString().toLong())
-        val creatorId = params["creatorId"].toString()
+        val requesterUsername = params["requesterUsername"].toString()
 
         try {
             val transactionHistoryId = transactionHistoryDao.create(
@@ -244,7 +244,7 @@ class SponsorshipFeeService(
                 amount = amount,
                 target = target,
                 transactionDate = transactionDate,
-                creatorId = creatorId
+                creatorId = requesterUsername
             )
 
             attachments?.map { attachment ->
@@ -255,7 +255,7 @@ class SponsorshipFeeService(
                     bucket = newObject.bucket,
                     key = newObject.key,
                     filename = attachment["filename"].toString(),
-                    updaterId = creatorId
+                    updaterId = requesterUsername
                 )
             }
 
@@ -272,8 +272,8 @@ class SponsorshipFeeService(
         val targetAmount = params["targetAmount"]?.toString()?.toInt()
         val status = params["status"]?.toString()
         val deleted = params["deleted"]?.let { it as Boolean }
-        val managerId = params["managerId"].toString().toLong()
-        val updaterId = params["updaterId"].toString()
+        val requesterId = params["requesterId"].toString().toLong()
+        val requesterUsername = params["requesterUsername"].toString()
         val historyContents = mutableListOf<String>()
 
         try {
@@ -291,15 +291,15 @@ class SponsorshipFeeService(
                     targetAmount = targetAmount,
                     status = status,
                     deleted = deleted,
-                    updaterId = updaterId
+                    updaterId = requesterUsername
                 )
 
                 sponsorshipFeeDao.createHistory(
                     sponsorshipFeeId = id,
                     contentType = Codes.HistoryContentType.CHANGE_LOG.value,
                     content = historyContents.joinToString("\n"),
-                    managerId = managerId,
-                    creatorId = updaterId
+                    managerId = requesterId,
+                    creatorId = requesterUsername
                 )
             }
 
@@ -320,7 +320,7 @@ class SponsorshipFeeService(
         val target = params["target"]?.toString()
         val transactionDate = params["transactionDate"]?.let { Instant.ofEpochMilli(it.toString().toLong()) }
         val deleted = params["deleted"]?.let { it as Boolean }
-        val updaterId = params["updaterId"].toString()
+        val requesterUsername = params["requesterUsername"].toString()
 
         try {
             transactionHistoryDao.update(
@@ -330,7 +330,7 @@ class SponsorshipFeeService(
                 target = target,
                 transactionDate = transactionDate,
                 deleted = deleted,
-                updaterId = updaterId
+                updaterId = requesterUsername
             )
 
             val prevAttachments = attachmentDao.findAttachmentsByTransactionHistoryIds(listOf(id))
@@ -348,7 +348,7 @@ class SponsorshipFeeService(
                             key = newObject?.key,
                             filename = attachment["filename"].toString(),
                             id = attachmentId,
-                            updaterId = updaterId
+                            updaterId = requesterUsername
                         )
                     }
                     attachmentId
@@ -361,12 +361,12 @@ class SponsorshipFeeService(
                     } else null
                 }
                 if (prevAttachmentIdsToDelete.count() > 0) {
-                    attachmentDao.deleteTransactionHistoryAttachment(prevAttachmentIdsToDelete, updaterId = updaterId)
+                    attachmentDao.deleteTransactionHistoryAttachment(prevAttachmentIdsToDelete, updaterId = requesterUsername)
                 }
             }
 
             if (clearAttachments !== null && clearAttachments) {
-                attachmentDao.deleteTransactionHistoryAttachment(prevAttachments.map { it.id.value }, updaterId = updaterId)
+                attachmentDao.deleteTransactionHistoryAttachment(prevAttachments.map { it.id.value }, updaterId = requesterUsername)
             }
 
             return true
@@ -379,19 +379,19 @@ class SponsorshipFeeService(
     @Suppress("UNCHECKED_CAST")
     fun deleteSponsorshipFee(deleteParams: Map<String, Any>): Boolean {
         val targetIds = deleteParams["targetIds"] as List<Long>
-        val updaterId = deleteParams["updaterId"].toString()
-        val managerId = deleteParams["managerId"].toString().toLong()
+        val requesterId = deleteParams["requesterId"].toString().toLong()
+        val requesterUsername = deleteParams["requesterUsername"].toString()
 
         try {
-            sponsorshipFeeDao.batchDelete(targetIds, updaterId)
+            sponsorshipFeeDao.batchDelete(targetIds, requesterUsername)
 
             targetIds.map { id ->
                 sponsorshipFeeDao.createHistory(
                     sponsorshipFeeId = id,
                     contentType = Codes.HistoryContentType.CHANGE_LOG.value,
                     content = "후원금 데이터 삭제",
-                    managerId = managerId,
-                    creatorId = updaterId
+                    managerId = requesterId,
+                    creatorId = requesterUsername
                 )
             }
             return true

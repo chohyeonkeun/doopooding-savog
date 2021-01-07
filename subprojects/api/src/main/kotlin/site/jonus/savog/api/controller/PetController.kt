@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -108,9 +109,17 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PostMapping("/pets", name = "세이보그 유기 애완동물 등록")
-    fun createPet(@RequestBody createParams: Map<String, Any>): ResultJson {
+    fun createPet(
+        @RequestBody createParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = createParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
+
         return try {
-            ResultJson.withData(petService.createPet(createParams))
+            ResultJson.withData(petService.createPet(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -124,9 +133,16 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PostMapping("/pet/comments", name = "세이보그 유기 애완동물 댓글 등록")
-    fun createPetComment(@RequestBody createParams: Map<String, Any>): ResultJson {
+    fun createPetComment(
+        @RequestBody createParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = createParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(petService.createPetComment(createParams))
+            ResultJson.withData(petService.createPetComment(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -140,9 +156,16 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PostMapping("/pet/diseases", name = "세이보그 유기 애완동물 질병 등록")
-    fun createPetDisease(@RequestBody createParams: Map<String, Any>): ResultJson {
+    fun createPetDisease(
+        @RequestBody createParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = createParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(petService.createPetDisease(createParams))
+            ResultJson.withData(petService.createPetDisease(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -156,9 +179,16 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PostMapping("/pet/treatmentHistories", name = "세이보그 유기 애완동물 치료내역 등록")
-    fun createPetTreatmentHistory(@RequestBody createParams: Map<String, Any>): ResultJson {
+    fun createPetTreatmentHistory(
+        @RequestBody createParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = createParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(petService.createPetTreatmentHistory(createParams))
+            ResultJson.withData(petService.createPetTreatmentHistory(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -172,9 +202,16 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PutMapping("/pets", name = "세이보그 유기 애완동물 수정")
-    fun updatePet(@RequestBody updateParams: Map<String, Any>): ResultJson {
+    fun updatePet(
+        @RequestBody updateParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = updateParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(petService.updatePet(updateParams))
+            ResultJson.withData(petService.updatePet(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -204,9 +241,16 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PutMapping("/pet/diseases", name = "세이보그 유기 애완동물 질병 수정")
-    fun updatePetDisease(@RequestBody updateParams: Map<String, Any>): ResultJson {
+    fun updatePetDisease(
+        @RequestBody updateParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = updateParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(petService.updatePetDisease(updateParams))
+            ResultJson.withData(petService.updatePetDisease(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -220,9 +264,16 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @PutMapping("/pet/treatmentHistories", name = "세이보그 유기 애완동물 치료내역 수정")
-    fun updatePetTreatmentHistory(@RequestBody updateParams: Map<String, Any>): ResultJson {
+    fun updatePetTreatmentHistory(
+        @RequestBody updateParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = updateParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(petService.updatePetTreatmentHistory(updateParams))
+            ResultJson.withData(petService.updatePetTreatmentHistory(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(
@@ -236,9 +287,16 @@ class PetController(private val petService: PetService) : BaseController() {
     }
 
     @DeleteMapping("/pet/histories", name = "세이보그 유기 애완동물 히스토리 일괄 삭제")
-    fun batchDeletePetHistory(@RequestBody deleteParams: Map<String, Any>): ResultJson {
+    fun batchDeletePetHistory(
+        @RequestBody deleteParams: Map<String, Any>,
+        @RequestHeader("X-Requester-Id") requesterId: String,
+        @RequestHeader("X-Requester-Username") requesterUsername: String
+    ): ResultJson {
+        val mutableParams = deleteParams.toMutableMap()
+        mutableParams["requesterId"] = requesterId
+        mutableParams["requesterUsername"] = requesterUsername
         return try {
-            ResultJson.withData(petService.batchDeletePetHistory(deleteParams))
+            ResultJson.withData(petService.batchDeletePetHistory(mutableParams.toMap()))
         } catch (e: Exception) {
             ResultJson.withError(
                 errors = *arrayOf(

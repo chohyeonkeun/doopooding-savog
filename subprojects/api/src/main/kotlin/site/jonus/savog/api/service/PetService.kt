@@ -251,8 +251,8 @@ class PetService(
         val weight = params["weight"].toString().toInt()
         val adoptionStatus = params["adoptionStatus"].toString()
         val birthDate = Instant.ofEpochMilli(params["birthDate"].toString().toLong()).atZone(Times.KST).toLocalDate()
-        val managerId = params["managerId"].toString().toLong()
-        val creatorId = params["creatorId"].toString()
+        val requesterId = params["requesterId"].toString().toLong()
+        val requesterUsername = params["requesterUsername"].toString()
 
         try {
             val petId = petDao.create(
@@ -263,7 +263,7 @@ class PetService(
                 weight = weight,
                 adoptionStatus = adoptionStatus,
                 birthDate = birthDate,
-                creatorId = creatorId
+                creatorId = requesterUsername
             )
 
             attachments?.map { attachment ->
@@ -274,7 +274,7 @@ class PetService(
                     bucket = newObject.bucket,
                     key = newObject.key,
                     filename = attachment["filename"].toString(),
-                    updaterId = creatorId
+                    updaterId = requesterUsername
                 )
             }
 
@@ -282,8 +282,8 @@ class PetService(
                 petId = petId,
                 contentType = Codes.HistoryContentType.CHANGE_LOG.value,
                 content = "pet create - petId: $petId",
-                managerId = managerId,
-                creatorId = creatorId
+                managerId = requesterId,
+                creatorId = requesterUsername
             )
 
             return petId
@@ -295,15 +295,15 @@ class PetService(
 
     fun createPetComment(params: Map<String, Any>): Long {
         val petId = params["petId"].toString().toLong()
-        val userId = params["userId"].toString().toLong()
         val parentId = if (params.containsKey("parentId")) params["parentId"].toString().toLong() else null
         val comment = params["comment"].toString()
         val showOnTop = params["showOnTop"] as Boolean
+        val requesterId = params["requesterId"].toString().toLong()
 
         try {
             return petCommentDao.create(
                 petId = petId,
-                userId = userId,
+                userId = requesterId,
                 parentId = parentId,
                 comment = comment,
                 showOnTop = showOnTop
@@ -318,14 +318,14 @@ class PetService(
         val petId = params["petId"].toString().toLong()
         val name = params["name"].toString()
         val healed = params["healed"] as Boolean
-        val creatorId = params["creatorId"].toString()
+        val requesterUsername = params["requesterUsername"].toString()
 
         try {
             return petDiseaseDao.create(
                 petId = petId,
                 name = name,
                 healed = healed,
-                creatorId = creatorId
+                creatorId = requesterUsername
             )
         } catch (e: Exception) {
             logger.warn("create pet disease fail", e)
@@ -338,7 +338,7 @@ class PetService(
         val petDiseaseId = if (params.containsKey("petDiseaseId")) params["petDiseaseId"].toString().toLong() else null
         val contents = params["contents"].toString()
         val treatmentDate = Instant.ofEpochMilli(params["treatmentDate"].toString().toLong()).atZone(Times.KST).toLocalDate()
-        val creatorId = params["creatorId"].toString()
+        val requesterUsername = params["requesterUsername"].toString()
 
         try {
             return petTreatmentHistoryDao.create(
@@ -346,7 +346,7 @@ class PetService(
                 petDiseaseId = petDiseaseId,
                 contents = contents,
                 treatmentDate = treatmentDate,
-                creatorId = creatorId
+                creatorId = requesterUsername
             )
         } catch (e: Exception) {
             logger.warn("create pet treatment history fail", e)
@@ -366,8 +366,8 @@ class PetService(
         val adoptionStatus = params["adoptionStatus"]?.toString()
         val birthDate = params["birthDate"]?.let { Instant.ofEpochMilli(it.toString().toLong()).atZone(Times.KST).toLocalDate() }
         val deleted = params["deleted"]?.toString()?.toInt()
-        val managerId = params["managerId"].toString().toLong()
-        val updaterId = params["updaterId"].toString()
+        val requesterId = params["requesterId"].toString().toLong()
+        val requesterUsername = params["requesterUsername"].toString()
         val historyContents = mutableListOf<String>()
 
         try {
@@ -395,15 +395,15 @@ class PetService(
                     adoptionStatus = adoptionStatus,
                     birthDate = birthDate,
                     deleted = deleted,
-                    updaterId = updaterId
+                    updaterId = requesterUsername
                 )
 
                 petDao.createHistory(
                     petId = petId,
                     contentType = Codes.HistoryContentType.CHANGE_LOG.value,
                     content = historyContents.joinToString("\n"),
-                    managerId = managerId,
-                    creatorId = updaterId
+                    managerId = requesterId,
+                    creatorId = requesterUsername
                 )
             }
 
@@ -422,7 +422,7 @@ class PetService(
                             key = newObject?.key,
                             filename = attachment["filename"].toString(),
                             id = attachmentId,
-                            updaterId = updaterId
+                            updaterId = requesterUsername
                         )
                     }
                     attachmentId
@@ -435,12 +435,12 @@ class PetService(
                     } else null
                 } else listOf()
                 if (prevAttachmentIdsToDelete.count() > 0) {
-                    attachmentDao.deletePetAttachment(prevAttachmentIdsToDelete, updaterId = updaterId)
+                    attachmentDao.deletePetAttachment(prevAttachmentIdsToDelete, updaterId = requesterUsername)
                 }
             }
 
             if (clearAttachments !== null && clearAttachments) {
-                if (prevAttachments.isNotEmpty()) attachmentDao.deletePetAttachment(prevAttachments.map { it!!.id.value }, updaterId = updaterId)
+                if (prevAttachments.isNotEmpty()) attachmentDao.deletePetAttachment(prevAttachments.map { it!!.id.value }, updaterId = requesterUsername)
             }
 
             return true
@@ -475,8 +475,8 @@ class PetService(
         val name = params["name"]?.toString()
         val healed = params["healed"]?.let { it as Boolean }
         val deleted = params["deleted"]?.let { it as Boolean }
-        val updaterId = params["updaterId"].toString()
-        val managerId = params["managerId"].toString().toLong()
+        val requesterId = params["requesterId"].toString().toLong()
+        val requesterUsername = params["requesterUsername"].toString()
         val historyContents = mutableListOf<String>()
 
         try {
@@ -494,15 +494,15 @@ class PetService(
                     name = name,
                     healed = healed,
                     deleted = deleted,
-                    updaterId = updaterId
+                    updaterId = requesterUsername
                 )
 
                 petDao.createHistory(
                     petId = originMap?.get("petId").toString().toLong(),
                     contentType = Codes.HistoryContentType.CHANGE_LOG.value,
                     content = historyContents.joinToString("\n"),
-                    managerId = managerId,
-                    creatorId = updaterId
+                    managerId = requesterId,
+                    creatorId = requesterUsername
                 )
             }
             return true
@@ -517,8 +517,8 @@ class PetService(
         val contents = params["contents"]?.toString()
         val treatmentDate = params["treatmentDate"]?.let { Instant.ofEpochMilli(it.toString().toLong()).atZone(Times.KST).toLocalDate() }
         val deleted = params["deleted"]?.let { it as Boolean }
-        val updaterId = params["updaterId"].toString()
-        val managerId = params["managerId"].toString().toLong()
+        val requesterId = params["requesterId"].toString().toLong()
+        val requesterUsername = params["requesterUsername"].toString()
         val historyContents = mutableListOf<String>()
 
         try {
@@ -536,15 +536,15 @@ class PetService(
                     contents = contents,
                     treatmentDate = treatmentDate,
                     deleted = deleted,
-                    updaterId = updaterId
+                    updaterId = requesterUsername
                 )
 
                 petDao.createHistory(
                     petId = originMap?.get("petId").toString().toLong(),
                     contentType = Codes.HistoryContentType.CHANGE_LOG.value,
                     content = historyContents.joinToString("\n"),
-                    managerId = managerId,
-                    creatorId = updaterId
+                    managerId = requesterId,
+                    creatorId = requesterUsername
                 )
             }
             return true
@@ -557,10 +557,10 @@ class PetService(
     @Suppress("UNCHECKED_CAST")
     fun batchDeletePetHistory(deleteParams: Map<String, Any>): Boolean {
         val targetIds = deleteParams["targetIds"] as List<Long>
-        val updaterId = deleteParams["updaterId"].toString()
+        val requesterUsername = deleteParams["requesterUsername"].toString()
 
         try {
-            petDao.batchDeletePetHistory(targetIds, updaterId)
+            petDao.batchDeletePetHistory(targetIds, requesterUsername)
             return true
         } catch (e: Exception) {
             logger.warn("batch delete pet history fail", e)

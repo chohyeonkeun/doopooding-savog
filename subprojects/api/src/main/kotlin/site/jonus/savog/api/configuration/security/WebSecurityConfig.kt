@@ -2,6 +2,8 @@ package site.jonus.savog.api.configuration.security
 
 import site.jonus.savog.core.Codes
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
+@Configuration
 @EnableWebSecurity
 class WebSecurityConfig(private val jwtTokenProvider: JwtTokenProvider) : WebSecurityConfigurerAdapter() {
 
@@ -33,16 +36,12 @@ class WebSecurityConfig(private val jwtTokenProvider: JwtTokenProvider) : WebSec
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 미사용
             .and()
             .authorizeRequests() // 요청에 대한 사용권한 체크
-            .antMatchers("/admin/**").hasRole(Codes.UserRoleType.ADMIN.value)
-            .antMatchers("/admin/**").hasRole(Codes.UserRoleType.MASTER.value)
-            .antMatchers("/master/**").hasRole(Codes.UserRoleType.MASTER.value)
-            .antMatchers("/user/**").hasRole(Codes.UserRoleType.GENERAL.value)
+            .antMatchers(HttpMethod.POST, "/v1/pets", "/v1/pet/histories", "/v1/pet/diseases", "/v1/pet/treatmentHistories", "/v1/sponsorshipFees", "/v1/sponsorshipFee/transaction/histories").hasAnyAuthority(Codes.UserRoleType.ADMIN.value, Codes.UserRoleType.MANAGER.value)
+            .antMatchers(HttpMethod.PUT, "/v1/pets", "/v1/pet/diseases", "/v1/pet/treatmentHistories", "/v1/sponsorshipFees", "/v1/sponsorshipFee/transaction/histories").hasAnyAuthority(Codes.UserRoleType.ADMIN.value, Codes.UserRoleType.MANAGER.value)
+            .antMatchers(HttpMethod.DELETE, "/v1/sponsorshipFees").hasAnyAuthority(Codes.UserRoleType.ADMIN.value, Codes.UserRoleType.MANAGER.value)
             .anyRequest().permitAll() // 그 외 나머지 요청은 누구나 접근 가능
             .and()
-            .addFilterBefore(
-                JwtAuthenticationFilter(
-                    jwtTokenProvider
-                ), UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter::class.java)
             // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다.
     }
 }
