@@ -2,7 +2,7 @@ import Vue from 'vue';
 import './plugins/axios';
 import MaterialKit from './plugins/material-kit';
 import App from './App';
-import router from './router';
+import router from 'router';
 import Bluebird from 'bluebird';
 
 Vue.config.productionTip = false;
@@ -25,7 +25,6 @@ Vue.mixin({
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
   router,
   render: h => h(App),
 }).$mount('#app');
