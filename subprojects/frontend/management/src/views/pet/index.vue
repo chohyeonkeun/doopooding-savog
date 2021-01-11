@@ -17,13 +17,15 @@ export default {
   created() {
     this.init();
   },
-  init() {
-    this.loadData();
-  },
-  async loadData() {
-    const PetApi = this.getApi(API.PET);
-    this.data = PetApi.getList();
-    console.log('petData - ', this.data);
+  methods: {
+    init() {
+      this.loadData();
+    },
+    async loadData() {
+      const PetApi = this.getApi(API.PET);
+      this.data = PetApi.getList();
+      console.log('petData - ', this.data);
+    },
   },
 };
 </script>
