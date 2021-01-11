@@ -1,52 +1,61 @@
-import Vue from "vue";
-import Router from "vue-router";
-import Index from "./views/Index.vue";
-import Landing from "./views/Landing.vue";
-import Login from "./views/Login.vue";
-import Profile from "./views/Profile.vue";
-import MainNavbar from "./layout/MainNavbar.vue";
-import MainFooter from "./layout/MainFooter.vue";
+import Vue from 'vue';
+import Router from 'vue-router';
+import mainRouter from './main';
 
 Vue.use(Router);
 
 export default new Router({
   mode: 'history',
+  base: process.env.BASE_URL,
   routes: [
+    mainRouter,
     {
-      path: "/",
-      name: "index",
-      components: { default: Index, header: MainNavbar, footer: MainFooter },
-      props: {
-        header: { colorOnScroll: 400 },
-        footer: { backgroundColor: "black" }
-      }
+      path: '',
+      children: [
+        {
+          path: '*',
+          redirect: '/error-404',
+        },
+      ],
     },
-    {
-      path: "/landing",
-      name: "landing",
-      components: { default: Landing, header: MainNavbar, footer: MainFooter },
-      props: {
-        header: { colorOnScroll: 400 },
-        footer: { backgroundColor: "black" }
-      }
-    },
-    {
-      path: "/login",
-      name: "login",
-      components: { default: Login, header: MainNavbar, footer: MainFooter },
-      props: {
-        header: { colorOnScroll: 400 }
-      }
-    },
-    {
-      path: "/profile",
-      name: "profile",
-      components: { default: Profile, header: MainNavbar, footer: MainFooter },
-      props: {
-        header: { colorOnScroll: 400 },
-        footer: { backgroundColor: "black" }
-      }
-    }
+    //   path: '/',
+    //   name: 'index',
+    //   components: {
+    //     default: Index,
+    //     header: MainNavbar,
+    //     footer: MainFooter
+    //   },
+    //   props: {
+    //     header: { colorOnScroll: 400 },
+    //     footer: { backgroundColor: 'black' },
+    //   },
+    // },
+    // {
+    //   path: '/landing',
+    //   name: 'landing',
+    //   components: { default: Landing, header: MainNavbar, footer: MainFooter },
+    //   props: {
+    //     header: { colorOnScroll: 400 },
+    //     footer: { backgroundColor: 'black' },
+    //   },
+    // },
+    // {
+    //   path: '/login',
+    //   name: 'login',
+    //   components: { default: Login, header: MainNavbar, footer: MainFooter },
+    //   props: {
+    //     header: { colorOnScroll: 400 },
+    //   },
+    // },
+    // {
+    //   path: '/profile',
+    //   name: 'profile',
+    //   components: { default: Profile, header: MainNavbar, footer: MainFooter },
+    //   props: {
+    //     header: { colorOnScroll: 400 },
+    //     footer: { backgroundColor: 'black' },
+    //   },
+    // },
   ],
   scrollBehavior: to => {
     if (to.hash) {
@@ -54,5 +63,5 @@ export default new Router({
     } else {
       return { x: 0, y: 0 };
     }
-  }
+  },
 });
