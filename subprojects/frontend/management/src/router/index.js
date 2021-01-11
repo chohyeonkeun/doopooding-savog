@@ -1,10 +1,11 @@
+import { find, isEmpty, startsWith } from 'lodash';
 import Vue from 'vue';
 import Router from 'vue-router';
 import mainRouter from './main';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -65,3 +66,37 @@ export default new Router({
     }
   },
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.path === from.path) {
+    next();
+  } else if (startsWith(to.path, '/error')) {
+    next();
+  } else {
+    const target = find(mainRouter.children, (route) => {
+      const match = route.path.match(/\/(:([^/]+))(\/)*/g);
+      if (isEmpty(match)) {
+        return (route.path === to.path);
+      } else {
+        const replaced = route.path.replace(/\/(:([^/]+))(\/)*/g, '/.+');
+        return to.path.match(new RegExp(replaced));
+      }
+    });
+    if (isEmpty(target)) {
+      next({ path: '/error-403' });
+      return;
+    }
+    
+    next();
+  }
+});
+
+router.afterEach(() => {
+  // Remove initial loading
+  const appLoading = document.getElementById('loading-bg');
+  if (appLoading) {
+    appLoading.style.display = 'none';
+  }
+});
+
+export default router;

@@ -1,5 +1,3 @@
-import Layout from 'layout/main';
-
 import Home from 'views';
 import MainNavbar from 'layout/MainNavbar.vue';
 import MainFooter from 'layout/MainFooter.vue';
@@ -7,7 +5,6 @@ import Pet from 'views/pet';
 
 const router = {
   path: '',
-  component: Layout,
   children: [
     {
       path: '/',
@@ -15,20 +12,32 @@ const router = {
       components: {
         default: Home,
         header: MainNavbar,
-        footer: MainFooter
+        footer: MainFooter,
+      },
+      props: {
+        header: { colorOnScroll: 400 },
+        footer: { backgroundColor: 'black' },
       },
     },
     {
       path: '/pet',
       name: 'pet',
-      components: Pet,
-      meta: {
-        breadcrumb: [
-          { title: 'Home', url: '/' },
-          { title: '애완동물', active: true },
-        ],
-        pageTitle: '애완동물',
+      components: {
+        default: Pet,
+        header: MainNavbar,
+        footer: MainFooter,
       },
+      props: {
+        header: { colorOnScroll: 400 },
+        footer: { backgroundColor: 'black' },
+      },
+      // meta: {
+      //   breadcrumb: [
+      //     { title: 'Home', url: '/' },
+      //     { title: '애완동물', active: true },
+      //   ],
+      //   pageTitle: '애완동물',
+      // },
     },
   ],
 };
