@@ -1,7 +1,9 @@
 import { isEmpty, get, mapValues, has, assign } from 'lodash';
 import axios from 'axios';
 import config from 'config';
-import pet from 'api/modules/pet';
+import pet from './modules/pet';
+import sponsorshipFee from './modules/sponsorshipFee';
+import proxy from 'api/proxy';
 
 function initClient(vm) {
   const client = axios.create(config.axios);
@@ -77,6 +79,7 @@ function initClient(vm) {
 
 const modules = {
   PET: pet,
+  SPONSORSHIPFEE: sponsorshipFee,
 };
 
 // { AUTH: "AUTH", ... } 의 값을 가지는 Map.
