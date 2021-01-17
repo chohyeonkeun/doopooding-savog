@@ -1,6 +1,6 @@
 <template>
   <div>
-    애완동물 리스트
+    후원금 리스트
   </div>
 </template>
 
@@ -22,8 +22,8 @@ export default {
       this.loadData();
     },
     async loadData() {
-      const PetApi = this.getApi(API.PET);
-      this.data = await PetApi.getList();
+      const SponsorshipFeeApi = this.getApi(API.SPONSORSHIP);
+      this.data = SponsorshipFeeApi.getList();
       console.log('petData - ', this.data);
     },
   },

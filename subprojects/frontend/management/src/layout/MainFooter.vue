@@ -5,7 +5,7 @@
     :data-background-color="backgroundColor"
   >
     <div class="container">
-      <nav>
+      <!-- <nav>
         <ul>
           <li>
             <a href="https://www.creative-tim.com">
@@ -28,11 +28,11 @@
             </a>
           </li>
         </ul>
-      </nav>
+      </nav> -->
+      <nav></nav>
       <div class="copyright">
         &copy; {{ year }}, made with <md-icon>favorite</md-icon> by
-        <a href="https://www.creative-tim.com/" target="_blank">Creative Tim</a>
-        for a better web.
+        <a href="https://www.creative-tim.com/" target="_blank">Jonus</a>
       </div>
     </div>
   </footer>
