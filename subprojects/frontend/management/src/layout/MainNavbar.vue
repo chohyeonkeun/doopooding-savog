@@ -8,7 +8,7 @@
   >
     <div class="md-toolbar-row md-collapse-lateral">
       <div class="md-toolbar-section-start">
-        <h3 class="md-title">Vue Material Kit</h3>
+        <h3 class="md-title"><b>세이보그 Savog</b></h3>
       </div>
       <div class="md-toolbar-section-end">
         <md-button
@@ -51,10 +51,16 @@
                         </li>
                         <li>
                           <a
-                            href="https://demos.creative-tim.com/vue-material-kit/documentation/"
+                            href="/pet"
                           >
-                            <i class="material-icons">content_paste</i>
-                            <p>Documentation</p>
+                          <i class="fas fa-dog fa-lg" />
+                          <p>애완동물</p>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="/sponsorship">
+                            <i class="fas fa-history fa-lg"></i>
+                            <p>후원금</p>
                           </a>
                         </li>
                       </ul>
@@ -64,21 +70,20 @@
               </li>
 
               <md-list-item
-                href="https://demos.creative-tim.com/vue-material-kit/documentation/"
-                target="_blank"
+                href="/pet"
                 v-if="showDownload"
               >
-                <i class="material-icons">content_paste</i>
-                <p>Documentation</p>
+                <i class="fas fa-dog fa-lg" />
+                <p>애완동물</p>
               </md-list-item>
 
               <md-list-item
-                href="javascript:void(0)"
+                href="/sponsorship"
                 @click="scrollToElement()"
                 v-if="showDownload"
               >
-                <i class="material-icons">cloud_download</i>
-                <p>Download</p>
+                <i class="fas fa-history fa-lg"></i>
+                <p>후원금</p>
               </md-list-item>
 
               <li class="md-list-item" v-else>
