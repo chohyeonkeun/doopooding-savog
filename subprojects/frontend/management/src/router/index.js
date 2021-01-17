@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from 'views';
+import Home from 'views/Index';
 import Sample from 'views/sample';
 import MainNavbar from 'layout/MainNavbar.vue';
 import MainFooter from 'layout/MainFooter.vue';
