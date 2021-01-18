@@ -7,7 +7,7 @@
             class="md-layout-item md-size-33 md-small-size-66 md-xsmall-size-100 md-medium-size-40 mx-auto"
           >
             <login-card header-color="green">
-              <h4 slot="title" class="card-title">Login</h4>
+              <h4 slot="title" :style="{ color: 'white' }"><b>로그인</b></h4>
               <md-button
                 slot="buttons"
                 href="javascript:void(0)"
@@ -29,24 +29,23 @@
               >
                 <i class="fab fa-google-plus-g"></i>
               </md-button>
-              <p slot="description" class="description">Or Be Classical</p>
-              <md-field class="md-form-group" slot="inputs">
+              <!-- <md-field class="md-form-group" slot="inputs">
                 <md-icon>face</md-icon>
-                <label>First Name...</label>
-                <md-input v-model="firstname"></md-input>
-              </md-field>
+                <label>이름</label>
+                <md-input v-model="name"></md-input>
+              </md-field> -->
               <md-field class="md-form-group" slot="inputs">
                 <md-icon>email</md-icon>
-                <label>Email...</label>
+                <label>이메일</label>
                 <md-input v-model="email" type="email"></md-input>
               </md-field>
               <md-field class="md-form-group" slot="inputs">
                 <md-icon>lock_outline</md-icon>
-                <label>Password...</label>
+                <label>비밀번호</label>
                 <md-input v-model="password"></md-input>
               </md-field>
-              <md-button slot="footer" class="md-simple md-success md-lg">
-                Get Started
+              <md-button slot="footer" class="md-simple md-success md-lg" @click="onConfirm">
+                확인
               </md-button>
             </login-card>
           </div>
@@ -57,33 +56,44 @@
 </template>
 
 <script>
-import { LoginCard } from "@/components";
+import { LoginCard } from '@/components';
+import ApiClient, { API } from 'api/client';
 
 export default {
+  extends: ApiClient,
   components: {
     LoginCard
   },
-  bodyClass: "login-page",
+  bodyClass: 'login-page',
   data() {
     return {
-      firstname: null,
       email: null,
-      password: null
+      password: null,
     };
   },
   props: {
     header: {
       type: String,
-      default: require("@/assets/img/profile_city.jpg")
-    }
+      default: require('@/assets/img/profile_city.jpg'),
+    },
   },
   computed: {
     headerStyle() {
       return {
-        backgroundImage: `url(${this.header})`
+        backgroundImage: `url(${this.header})`,
       };
-    }
-  }
+    },
+  },
+  methods: {
+    async onConfirm() {
+      const UserApi = this.getApi(API.USER);
+      const result = await UserApi.login({ email: this.email, password: this.password, loginType: 'LOGTP_EMAIL' });
+      // TODO: then, catch, finally 처리 + await 전후 loading 처리
+      this.$store.dispatch('user/setUserInfo', result);
+      localStorage.setItem('loginUserId', result.userId);
+      localStorage.setItem('loginUsername', result.userNickname);
+    },
+  },
 };
 </script>
 
