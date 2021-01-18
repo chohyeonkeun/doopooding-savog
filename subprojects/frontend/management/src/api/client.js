@@ -1,6 +1,7 @@
 import { isEmpty, get, mapValues, has, assign } from 'lodash';
 import axios from 'axios';
 import config from 'config';
+import user from './modules/user';
 import pet from './modules/pet';
 import sponsorshipFee from './modules/sponsorshipFee';
 import proxy from 'api/proxy';
@@ -78,6 +79,7 @@ function initClient(vm) {
 }
 
 const modules = {
+  USER: user,
   PET: pet,
   SPONSORSHIPFEE: sponsorshipFee,
 };
