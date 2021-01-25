@@ -58,6 +58,7 @@
 <script>
 import { LoginCard } from '@/components';
 import ApiClient, { API } from 'api/client';
+import DialogUtil from '@/utils/dialog';
 
 export default {
   extends: ApiClient,
@@ -87,11 +88,16 @@ export default {
   methods: {
     async onConfirm() {
       const UserApi = this.getApi(API.USER);
-      const result = await UserApi.login({ email: this.email, password: this.password, loginType: 'LOGTP_EMAIL' });
-      // TODO: then, catch, finally 처리 + await 전후 loading 처리
-      this.$store.dispatch('user/setUserInfo', result);
-      localStorage.setItem('loginUserId', result.userId);
-      localStorage.setItem('loginUsername', result.userNickname);
+      // TODO: await 전후 loading 처리
+      const result = await UserApi.login({ email: this.email, password: this.password, loginType: 'LOGTP_EMAIL' })
+        .then(() => {
+          this.$store.dispatch('user/setUserInfo', result);
+          localStorage.setItem('loginUserId', result.userId);
+          localStorage.setItem('loginUsername', result.userNickname);
+        })
+        .catch((err) => {
+          DialogUtil.alert(err);
+        });
     },
   },
 };
