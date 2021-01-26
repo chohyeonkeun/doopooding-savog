@@ -29,11 +29,6 @@
               >
                 <i class="fab fa-google-plus-g"></i>
               </md-button>
-              <!-- <md-field class="md-form-group" slot="inputs">
-                <md-icon>face</md-icon>
-                <label>이름</label>
-                <md-input v-model="name"></md-input>
-              </md-field> -->
               <md-field class="md-form-group" slot="inputs">
                 <md-icon>email</md-icon>
                 <label>이메일</label>
@@ -42,7 +37,7 @@
               <md-field class="md-form-group" slot="inputs">
                 <md-icon>lock_outline</md-icon>
                 <label>비밀번호</label>
-                <md-input v-model="password"></md-input>
+                <md-input v-model="password" type="password"></md-input>
               </md-field>
               <md-button slot="footer" class="md-simple md-success md-lg" @click="onConfirm">
                 확인
@@ -87,15 +82,24 @@ export default {
   },
   methods: {
     async onConfirm() {
-      const UserApi = this.getApi(API.USER);
+      if (!this.email || !this.password) {
+        const msg = !this.email ? '아이디를 입력해주세요.' : '비밀번호를 입력해주세요.';
+        // TODO: 템플릿에 맞는 에러메시지 alert
+        DialogUtil.alert(msg);
+        return;
+      }
+      const UserApi = this.getApi(API.USER);      
       // TODO: await 전후 loading 처리
-      const result = await UserApi.login({ email: this.email, password: this.password, loginType: 'LOGTP_EMAIL' })
-        .then(() => {
-          this.$store.dispatch('user/setUserInfo', result);
-          localStorage.setItem('loginUserId', result.userId);
-          localStorage.setItem('loginUsername', result.userNickname);
+      await UserApi.login({ email: this.email, password: this.password, loginType: 'LOGTP_EMAIL' })
+        .then((res) => {
+          this.$store.dispatch('user/login', res);
+          localStorage.setItem('loginUserId', res.userId);
+          localStorage.setItem('loginUsername', res.userNickname);
+          this.$router.push('/');
         })
         .catch((err) => {
+          // TODO: 템플릿에 맞는 에러메시지 alert 
+          // TODO: 아이디, 비밀번호 잘못 입력시, 처리
           DialogUtil.alert(err);
         });
     },

@@ -17,4 +17,7 @@ export default {
   SET_USER_ROLES: (state, userRoles) => {
     state.userRoles = userRoles;
   },
+  SET_LOGGED: (state, logged) => {
+    state.logged = logged;
+  },
 };

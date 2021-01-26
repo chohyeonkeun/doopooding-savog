@@ -19,8 +19,7 @@
       </div>
       <div class="md-layout">
         <div class="md-layout-item text-center">
-          <md-button href="/login" class="md-simple md-success md-lg"
-            >View Login Page</md-button
+          <md-button v-if="!loggedIn" href="/login" class="md-simple md-success md-lg">View Login Page</md-button
           >
         </div>
       </div>
@@ -98,7 +97,10 @@ export default {
       return {
         backgroundImage: `url(${this.signup})`
       };
-    }
+    },
+    loggedIn() {
+      return this.$store.state.user.logged;
+    },
   },
   mounted() {
     this.leafActive();
