@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from 'views/Index';
-import Sample from 'views/sample';
 import MainNavbar from 'layout/MainNavbar.vue';
 import MainFooter from 'layout/MainFooter.vue';
 import Pet from 'views/pet';
@@ -19,19 +18,6 @@ const router = new Router({
       name: 'home',
       components: {
         default: Home,
-        header: MainNavbar,
-        footer: MainFooter,
-      },
-      props: {
-        header: { colorOnScroll: 400 },
-        footer: { backgroundColor: 'black' },
-      },
-    },
-    {
-      path: '/sample',
-      name: 'sample',
-      components: {
-        default: Sample,
         header: MainNavbar,
         footer: MainFooter,
       },

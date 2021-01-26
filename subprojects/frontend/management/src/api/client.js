@@ -16,8 +16,8 @@ function initClient(vm) {
       const username = localStorage.getItem('loginUsername');
       config = assign(config, {
         headers: {
-          'X-Requester-Id': userId || null,
-          'X-Requester-Username': username || null,
+          'X-Requester-Id': userId,
+          'X-Requester-Username': encodeURIComponent(username),
         },
       });
       return config;
