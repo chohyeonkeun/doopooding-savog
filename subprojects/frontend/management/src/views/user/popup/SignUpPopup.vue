@@ -1,9 +1,9 @@
 <template>
   <div>
-    <modal v-if="showSignUpPopup" @close="closeSignUpPopup">
+    <modal v-if="showSignUpPopup" @close="onClosed">
         <template slot="header">
           <h4 class="modal-title">회원가입</h4>
-          <md-button class="md-simple md-just-icon md-round modal-default-button" @click="closeSignUpPopup">
+          <md-button class="md-simple md-just-icon md-round modal-default-button" @click="onClosed">
             <md-icon>clear</md-icon>
           </md-button>
         </template>
@@ -25,7 +25,7 @@
             <md-input v-model="name" type="email"></md-input>
           </md-field>
           <md-field class="md-form-group" slot="inputs">
-            <md-icon>face</md-icon>
+            <md-icon>account_circle</md-icon>
             <label>닉네임</label>
             <md-input v-model="nickname" type="email"></md-input>
           </md-field>
@@ -33,7 +33,7 @@
 
         <template slot="footer">
           <md-button class="md-simple md-success md-lg" @click="onConfirm">완료</md-button>
-          <md-button class="md-danger md-simple md-lg" @click="closeSignUpPopup">취소</md-button>
+          <md-button class="md-danger md-simple md-lg" @click="onClosed">취소</md-button>
         </template>
       </modal>
   </div>
@@ -76,9 +76,15 @@ export default {
         return;
       }
 
-      const pwdRegex =  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{9,}$/;
+      const pwdRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{9,}$/;
       if (!pwdRegex.test(this.password)) {
         DialogUtil.alert('비밀번호는 영문 대/소문자와 특수문자 3개를 조합하여 9자 이상이어야 합니다.');
+        return;
+      }
+
+      const nameRegex = /^[가-힣]{2,5}$/g;
+      if (!nameRegex.test(this.name)) {
+        DialogUtil.alert('이름은 한글로만 2자 이상 5자 이하여야 합니다.');
         return;
       }
 
@@ -88,8 +94,9 @@ export default {
       }
 
       this.$emit('confirm', { email: this.email, password: this.password, name: this.name, nickname: this.nickname, loginType: 'LOGTP_EMAIL' });
+      this.onClosed();
     },
-    closeSignUpPopup() {
+    onClosed() {
       this.initData();
       this.$emit('close');
     },
