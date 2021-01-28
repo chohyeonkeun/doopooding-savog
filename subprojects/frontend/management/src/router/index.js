@@ -5,7 +5,7 @@ import MainNavbar from 'layout/MainNavbar.vue';
 import MainFooter from 'layout/MainFooter.vue';
 import Pet from 'views/pet';
 import SponsorshipFee from 'views/sponsorshipFee';
-import Login from 'views/Login';
+import Login from 'views/user/Login';
 
 Vue.use(Router);
 
