@@ -69,7 +69,23 @@ export default {
         DialogUtil.alert(msg);
         return;
       }
-      // TODO: 이메일 형식, 비밀번호 형식, 닉네임 형식 유효성 검사 추가
+
+      const emailRegex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+      if (!emailRegex.test(this.email)) {
+        DialogUtil.alert('이메일 형식이 올바르지 않습니다.');
+        return;
+      }
+
+      const pwdRegex =  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{9,}$/;
+      if (!pwdRegex.test(this.password)) {
+        DialogUtil.alert('비밀번호는 영문 대/소문자와 특수문자 3개를 조합하여 9자 이상이어야 합니다.');
+        return;
+      }
+
+      if (this.nickname.length < 2 || this.nickname.length > 8) {
+        DialogUtil.alert('닉네임 길이는 2글자 이상 8글자 이하여야 합니다.');
+        return;
+      }
 
       this.$emit('confirm', { email: this.email, password: this.password, name: this.name, nickname: this.nickname, loginType: 'LOGTP_EMAIL' });
     },
