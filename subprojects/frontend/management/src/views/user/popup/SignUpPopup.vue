@@ -76,9 +76,15 @@ export default {
         return;
       }
 
-      const pwdRegex =  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{9,}$/;
+      const pwdRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{9,}$/;
       if (!pwdRegex.test(this.password)) {
         DialogUtil.alert('비밀번호는 영문 대/소문자와 특수문자 3개를 조합하여 9자 이상이어야 합니다.');
+        return;
+      }
+
+      const nameRegex = /^[가-힣]{2,5}$/g;
+      if (!nameRegex.test(this.name)) {
+        DialogUtil.alert('이름은 한글로만 2자 이상 5자 이하여야 합니다.');
         return;
       }
 
