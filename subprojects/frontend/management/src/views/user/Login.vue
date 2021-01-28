@@ -40,13 +40,21 @@
                 <md-input v-model="password" type="password"></md-input>
               </md-field>
               <md-button slot="footer" class="md-simple md-success md-lg" @click="onConfirm">
-                확인
+                확인                
+              </md-button>
+              <md-button slot="footer" class="md-simple md-success md-lg" @click="openSignUpPopup">
+                회원가입
               </md-button>
             </login-card>
           </div>
         </div>
       </div>
     </div>
+    <sign-up-popup
+      :show-sign-up-popup="showSignUpPopup"
+      @confirm="signUp"
+      @close="closeSignUpPopup"
+    />
   </div>
 </template>
 
@@ -54,17 +62,20 @@
 import { LoginCard } from '@/components';
 import ApiClient, { API } from 'api/client';
 import DialogUtil from '@/utils/dialog';
+import SignUpPopup from './popup/SignUpPopup';
 
 export default {
   extends: ApiClient,
   components: {
-    LoginCard
+    LoginCard,
+    SignUpPopup,
   },
   bodyClass: 'login-page',
   data() {
     return {
-      email: null,
-      password: null,
+      email: '',
+      password: '',
+      showSignUpPopup: false,
     };
   },
   props: {
@@ -88,6 +99,8 @@ export default {
         DialogUtil.alert(msg);
         return;
       }
+      // TODO: 이메일 형식, 비밀번호 형식, 닉네임 형식 유효성 검사 추가
+
       const UserApi = this.getApi(API.USER);      
       // TODO: await 전후 loading 처리
       await UserApi.login({ email: this.email, password: this.password, loginType: 'LOGTP_EMAIL' })
@@ -96,12 +109,36 @@ export default {
           localStorage.setItem('loginUserId', res.userId);
           localStorage.setItem('loginUsername', res.userNickname);
           this.$router.push('/');
+          this.initData();
         })
         .catch((err) => {
           // TODO: 템플릿에 맞는 에러메시지 alert 
           // TODO: 아이디, 비밀번호 잘못 입력시, 처리
           DialogUtil.alert(err);
+          this.initData();
         });
+    },
+    async signUp(data) {
+      const UserApi = this.getApi(API.USER);
+      await UserApi.join(data)
+        .then(() => {
+          // TODO: 회원가입 축하 메시지 alert 및 창 닫음
+          console.log('회원가입 완료');
+        })
+        .catch((err) => {
+          // TODO: 템플릿에 맞는 에러메시지 alert
+          DialogUtil.alert(err);
+        });
+    },
+    openSignUpPopup() {
+      this.showSignUpPopup = true;
+    },
+    closeSignUpPopup() {
+      this.showSignUpPopup = false;
+    },
+    initData() {
+      this.email = '';
+      this.password = '';
     },
   },
 };

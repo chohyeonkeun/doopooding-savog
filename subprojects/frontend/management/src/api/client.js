@@ -36,7 +36,8 @@ function initClient(vm) {
       }
     }, (error) => {
       const status = get(error, 'response.status');
-      const { code, message } = get(error, 'response.data.errors[0]', { code: '', message: '' });
+      let { message } = get(error, 'response.data', { message: '' });
+      // TODO: message 에서 ':' 뒤의 메시지 가져오기
       switch (status) {
         case 401: {
           const options = {
