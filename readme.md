@@ -16,15 +16,16 @@
 ##### 데이터베이스
 - mySQL (로컬), mariaDB (RDS)
 
-##### CICD
-- travis CI, CodeDeploy
-
-##### Deploy
+##### AWS
 - aws S3
 - aws EC2
 - aws RDS
 - aws Route53
- 
+- aws CodeDeploy
+
+##### CICD
+- travis CI (CI)
+- CodeDeploy (CD)
 
 ## 주요 기능
 #### 로그인 및 권한 설정
