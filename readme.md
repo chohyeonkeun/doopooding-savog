@@ -81,13 +81,53 @@
 1. 파일 업로드 요청
 2. 요구되는 파일 확장자 타입에 맞는 확장자인지 유효성 검사
 3. 파일명, 파일유형, 개발모드 여부 정보로 key 생성 (extension, UUID, 현재일자로 구성된 key)
-4. 해당 파일으로 된 FileInputStream 객체 생성하여 버킷명과 key, metadata로 AmazonS3 객체 주입
-  > AmazonS3 객체 주입 
+4. 임시 버킷에 파일 업로드(해당 파일으로 된 FileInputStream 객체 생성하여 임시 버킷명과 key, metadata로 AmazonS3 객체 주입)
+  > AmazonS3 객체 주입
     FileInputStream(file).use {
-        amazonS3Client.putObject(PutObjectRequest(버킷명, key, it, metadata))
-    } 
+        amazonS3Client.putObject(PutObjectRequest(임시버킷명, key, it, metadata))
+    }
+5. 임시버킷에 있는 파일을 실제 버킷에 복사
+  > 외부 버킷인 경우
+    amazonS3External.putObject(
+        PutObjectRequest(destinationBucket, destinationKey, it, meta)
+    )
+  > 외부 버킷이 아닌 경우
+    val request = CopyObjectRequest(sourceBucket, srcFileKey, destinationBucket, destinationKey)
+        .also {
+            if (meta != null) it.withNewObjectMetadata(meta)
+        }
+    amazonS3Client.copyObject(request)
 ```
 #### 배포
+1. master branch push 
+2. trevis CI로 빌드하여 파일 압축
+3. S3 버킷에 압축파일 저장
+4. CodeDeploy 이용하여 EC2 배포
 ```
-
+1. master branch push (trevis CI tracking)
+2. trevis CI 빌드
+  - .travis.yml에 빌드 정의
+  - ./gradlew clean build --build-cache -x test
+  - before-deploy 디렉토리 생성
+  - before-deploy 디렉토리에 deploy.sh 파일, .appspec.yml 복사
+  - frontend 코드 before-deploy/frontend/에 이동
+  - jar 파일 before-deploy/backend/에 복사 
+  - before-deploy 디렉토리 압축
+  - deploy 디렉토리에 파일 이동
+  - s3 버킷에 업츅 파일 업로드
+  - CI 완료 시, 자동 메일 알람    
+3. s3 파일 업로드 이후, CodeDeploy 실행
+  - .appspec.yml에 ec2 ApplicationStart 단계에서 실행되는 코드 정의
+  - 지정한 위치에 있는 모든 파일들 ec2-user 권한 부여
+  - ec2 서버에서 지정한 위치에 있는 deploy.sh 스크립트 실행
+4. deploy.sh 실행
+  - nginx 설치
+  - 작성한 nginx 설정파일을 /etc/nginx/conf.d/default.conf로 복사
+  - npm 설치
+  - npm run build
+  - 생성된 dist 디렉토리를 /usr/share/nginx/html로 이동
+  - nginx 문법 체크
+  - nginx 재시작
+  - 현재 구동중인 애플리케이션 종료 
+  - jar 파일 실행 
 ``` 
