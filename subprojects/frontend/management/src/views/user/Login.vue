@@ -99,7 +99,18 @@ export default {
         DialogUtil.alert(msg);
         return;
       }
-      // TODO: 이메일 형식, 비밀번호 형식, 닉네임 형식 유효성 검사 추가
+
+      const emailRegex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+      if (!emailRegex.test(this.email)) {
+        DialogUtil.alert('이메일 형식이 올바르지 않습니다.');
+        return;
+      }
+
+      const pwdRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{9,}$/;
+      if (!pwdRegex.test(this.password)) {
+        DialogUtil.alert('비밀번호는 영문 대/소문자와 특수문자 3개를 조합하여 9자 이상이어야 합니다.');
+        return;
+      }
 
       const UserApi = this.getApi(API.USER);      
       // TODO: await 전후 loading 처리
@@ -122,8 +133,8 @@ export default {
       const UserApi = this.getApi(API.USER);
       await UserApi.join(data)
         .then(() => {
-          // TODO: 회원가입 축하 메시지 alert 및 창 닫음
-          console.log('회원가입 완료');
+          // TODO: 템플릿에 맞는 에러메시지 alert
+          DialogUtil.alert('세이보그 회원이 되신걸 축하드립니다.');
         })
         .catch((err) => {
           // TODO: 템플릿에 맞는 에러메시지 alert
